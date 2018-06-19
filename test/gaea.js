@@ -1,6 +1,5 @@
-import test from 'ava'
-import gaea from '../src'
+const {test} = require('tap')
 
 test('description', t => {
-  t.is(true, true)
+  return Promise.resolve()
 })

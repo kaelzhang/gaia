@@ -25,8 +25,23 @@ $ npm install gaea
 
 ## Usage
 
+index.js
+
 ```js
-import gaea from 'gaea'
+const gaea = require('gaea')
+
+module.exports = gaea.load(__dirname)
+```
+
+start.js
+
+```js
+const {server} = require('./index')
+server.start()
+```
+
+```sh
+$ node start.js
 ```
 
 ## License
