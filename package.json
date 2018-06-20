@@ -2,9 +2,7 @@
   "name": "gaea",
   "version": "1.0.0",
   "description": "gaea",
-  "bin": {
-    "gaea": "bin/index.js"
-  },
+  "main": "src/index.js",
   "scripts": {
     "test": "tap test/*.js --coverage",
     "test-no-cov": "tap test/*.js",
@@ -29,16 +27,14 @@
   "bugs": {
     "url": "https://github.com/kaelzhang/gaea/issues"
   },
-  "ava": {
-    "files": [
-      "test/*.js"
-    ]
-  },
   "devDependencies": {
-    "codecov": "^2.3.0",
+    "codecov": "^3.0.2",
     "tap": "^12.0.1"
   },
   "dependencies": {
-    "grpc": "^1.12.3"
+    "glob": "^7.1.2",
+    "grpc": "^1.12.3",
+    "object-access": "^1.2.5",
+    "skema": "^9.3.3"
   }
 }
