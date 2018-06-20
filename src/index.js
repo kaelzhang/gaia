@@ -7,6 +7,7 @@ const readConfig = require('./config')
 
 const REGEX_IS_DIR = /\/$/
 const STR_JS = '.js'
+const STR_DOT = '.'
 
 const isDir = something => !!something && REGEX_IS_DIR.test(something)
 const getServiceName_file = filename => path.basename(filename, STR_JS)
@@ -21,7 +22,7 @@ class Gaea {
     this._options = new Options(root)
   }
 
-  get client (host) {
+  client (host) {
     return new Client(host, this._options).create()
   }
 
@@ -48,7 +49,7 @@ class Options {
 
     const services = this._services = {}
     const children = glob.sync('*', {
-      cwd: this._service_root,
+      cwd: this.service_root,
       mark: true
     })
 
@@ -60,26 +61,31 @@ class Options {
       const name = isDir(child)
         ? getServiceName_dir(child)
         : getServiceName_file(child)
-      const abspath = path.join(this._service_root, child)
+      const abspath = path.join(this.service_root, child)
 
       try {
-        this._service[name] = require(abspath)
+        this._services[name] = require(abspath)
       } catch (e) {
-        throw 'todo'
+        throw new Error(`fails to require service, ${e.stack}`)
       }
     })
+
+    return services
   }
 }
 
-const getProto = (proto, package) => {
-  if (!package) {
+const getProto = (proto_root, s) => {
+  const proto_path = path.join(proto_root, s.proto)
+  const proto = grpc.load(proto_path)
+
+  if (!s.package) {
     return proto
   }
 
-  const ret = access(proto, package)
+  const ret = access(proto, s.package)
 
   if (!ret) {
-    throw 'todo'
+    throw new Error('proto not found')
   }
 
   return ret
@@ -141,13 +147,10 @@ class Server {
 
     Object.keys(service).forEach(name => {
       const s = service[name]
-      const proto_path = path.join(proto_root, s.proto)
-      const proto = grpc.load(proto_path)
-
-      const dest = getProto(proto, s.package)
+      const proto = getProto(proto_root, s)
 
       // TODO, treat null
-      server.addService(dest[name].service, wrapServerMethods(s.methods))
+      server.addService(proto[name].service, wrapServerMethods(s.methods))
     })
 
     server.bind(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure())
@@ -163,6 +166,24 @@ class Client {
   }
 
   create () {
-    const services = {}
+    const {
+      service,
+      proto_root
+    } = this._options
+
+    const clients = {}
+
+    Object.keys(service).forEach(name => {
+      const s = service[name]
+      const properties = s.package
+        ? s.package.split(STR_DOT).concat(name)
+        : [name]
+
+      const proto = getProto(proto_root, s)
+      const client = new proto[name](
+        this._host, grpc.credentials.createInsecure())
+
+      access.set(clients, properties, wrapClientMethods(client, s.methods))
+    })
   }
 }

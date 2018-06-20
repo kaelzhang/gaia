@@ -2,12 +2,7 @@ const {shape} = require('skema')
 const path = require('path')
 
 const Config = shape({
-  port: Number,
-  proto: {
-    type: String,
-    default:
-  }
-
+  port: Number
   // hostname
 })
 
