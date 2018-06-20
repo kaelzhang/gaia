@@ -185,5 +185,7 @@ class Client {
 
       access.set(clients, properties, wrapClientMethods(client, s.methods))
     })
+
+    return clients
   }
 }
