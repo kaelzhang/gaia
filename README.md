@@ -15,7 +15,7 @@
 
 # gaea
 
-<!-- description -->
+The manager to wrap [grpc](https://grpc.io) services and hold .proto files.
 
 ## Install
 
@@ -25,24 +25,30 @@ $ npm install gaea
 
 ## Usage
 
-index.js
+Start server:
 
 ```js
-const gaea = require('gaea')
-
-module.exports = gaea.load(__dirname)
-```
-
-start.js
-
-```js
-const {server} = require('./index')
+const {server} = require('./example/hello')
 server.start()
 ```
 
-```sh
-$ node start.js
+Run client:
+
+```js
+const {
+  helloworld: {Greeter}
+} = require('./example/hello').client('localhost:50051')
+
+const run = async () => {
+  const {message} = await Greeter.sayHello({name: 'world'})
+
+  console.log('Greeting:', message)
+}
+
+run()
 ```
+
+##
 
 ## License
 

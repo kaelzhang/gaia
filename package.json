@@ -1,7 +1,7 @@
 {
   "name": "gaea",
   "version": "1.0.0",
-  "description": "gaea",
+  "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
     "test": "tap test/*.js --coverage",
