@@ -48,7 +48,11 @@ const run = async () => {
 run()
 ```
 
-##
+## How to use `gaea` to build a grpc service
+
+```js
+// TODO
+```
 
 ## License
 
