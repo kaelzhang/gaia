@@ -1,7 +1,7 @@
 exports.methods = {
   sayHello ({
     name
-  }, call) {
+  }) {
     return {
       message: `Hello ${name}`
     }

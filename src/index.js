@@ -37,8 +37,8 @@ class Options {
     const c = this.config = readConfig(root)
 
     this.port = c.port
-    this.proto_root = path.join(root, 'proto')
-    this.service_root = path.join(root, 'service')
+    this.proto_root = path.resolve(root, c.proto_root)
+    this.service_root = path.resolve(root, c.service_root)
     this._services = null
   }
 
