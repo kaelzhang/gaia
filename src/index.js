@@ -20,6 +20,7 @@ exports.load = root => {
 class Gaea {
   constructor (root) {
     this._options = new Options(root)
+    this.client = this.client.bind(this)
   }
 
   client (host) {
