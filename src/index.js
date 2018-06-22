@@ -93,7 +93,7 @@ const getProto = (proto_root, s) => {
 
 const wrapServerMethod = method => {
   return (call, callback) => {
-    Promise.resolve(method(call))
+    Promise.resolve(method(call.request, call))
     .then(
       res => callback(null, res),
       callback
