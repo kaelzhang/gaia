@@ -4,9 +4,9 @@
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
-    "test": "piapia test/*.js --coverage",
-    "test-no-cov": "piapia test/*.js",
-    "posttest": "piapia --coverage-report=text-lcov && codecov"
+    "test": "nyc ava --timeout=10s",
+    "test-no-cov": "ava --timeout=10s",
+    "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "files": [
     "lib/",
@@ -22,14 +22,18 @@
   "engines": {
     "node": ">=10"
   },
+  "ava": {
+    "babel": false
+  },
   "author": "kaelzhang",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kaelzhang/gaea/issues"
   },
   "devDependencies": {
+    "ava": "^1.0.0-beta.6",
     "codecov": "^3.0.2",
-    "piapia": "^1.1.0"
+    "nyc": "^12.0.2"
   },
   "dependencies": {
     "glob": "^7.1.2",

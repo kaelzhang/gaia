@@ -1,10 +1,10 @@
-const {test} = require('piapia')
+const {test} = require('ava')
 const hello = require('../example/hello')
 const {server, client} = hello
 
 let Greeter
 
-test.before = () => {
+test.before(() => {
   server.start()
 
   const {
@@ -12,7 +12,7 @@ test.before = () => {
   } = client('localhost:50051')
 
   Greeter = helloworld.Greeter
-}
+})
 
 test.after = () => {
   process.nextTick(() => {
