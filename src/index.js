@@ -68,7 +68,8 @@ class Options {
       try {
         this._services[name] = require(abspath)
       } catch (e) {
-        throw new Error(`fails to require service, ${e.stack}`)
+        debug('fails to require service %s', e.stack)
+        throw new Error(`fails to require service, ${abspath}`)
       }
     })
 
