@@ -14,11 +14,9 @@ test.before(() => {
   Greeter = helloworld.Greeter
 })
 
-test.after = () => {
-  process.nextTick(() => {
-    process.exit()
-  })
-}
+test.after(() => {
+  process.exit()
+})
 
 test('sayHello', async t => {
   const obj = Object.create(null)
@@ -33,4 +31,16 @@ test('sayHello', async t => {
   const {message} = await Greeter.sayHello(obj)
 
   t.is(message, 'Hello world')
+})
+
+test('throws: should throws', async t => {
+  try {
+    await Greeter.throws({})
+  } catch (error) {
+    t.is(error.message, 'custom error')
+    t.is(error.code, 'CUSTOM_ERROR')
+    return
+  }
+
+  t.fail()
 })

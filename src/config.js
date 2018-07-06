@@ -1,4 +1,4 @@
-const {shape} = require('skema')
+const {shape, any} = require('skema')
 const path = require('path')
 
 const Config = shape({
@@ -10,7 +10,8 @@ const Config = shape({
   proto_root: {
     type: String,
     default: 'proto'
-  }
+  },
+  error_props: any()
 })
 
 module.exports = absRoot => {

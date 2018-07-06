@@ -1,3 +1,5 @@
+const grpc = require('grpc')
+
 exports.methods = {
   sayHello ({
     name
@@ -10,6 +12,12 @@ exports.methods = {
     })
 
     return obj
+  },
+
+  throws () {
+    const error = new Error('custom error')
+    error.code = 'CUSTOM_ERROR'
+    throw error
   }
 }
 

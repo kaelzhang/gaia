@@ -4,7 +4,10 @@ package helloworld;
 
 service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc Throws (EmptyMessage) returns (EmptyMessage) {}
 }
+
+message EmptyMessage {}
 
 message HelloRequest {
   string name = 1;

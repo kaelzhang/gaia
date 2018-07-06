@@ -1,11 +1,11 @@
 {
   "name": "gaea",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
     "test": "nyc ava --timeout=10s",
-    "test-no-cov": "ava --timeout=10s",
+    "test-no-cov": "ava --timeout=10s --verbose",
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "files": [

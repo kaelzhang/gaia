@@ -17,6 +17,9 @@
 
 The manager to wrap [grpc](https://grpc.io) services and hold .proto files.
 
+- **Handle Custom Errors** `grpc` does NOT provide an formal way to handle errors, even lack of documentation, while `gaea` will do it for you.
+- **Manage .proto files** `gaea` allows us to share proto files between server and clients.
+
 ## Install
 
 ```sh
