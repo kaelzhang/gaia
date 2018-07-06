@@ -2,9 +2,14 @@ exports.methods = {
   sayHello ({
     name
   }) {
-    return {
-      message: `Hello ${name}`
-    }
+    const obj = Object.create(null)
+
+    Object.defineProperty(obj, 'message', {
+      get: () => `Hello ${name}`,
+      enumerable: true
+    })
+
+    return obj
   }
 }
 
