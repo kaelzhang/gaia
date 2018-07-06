@@ -1,4 +1,5 @@
 const grpc = require('grpc')
+const proto_loader = require('@grpc/proto-loader')
 const glob = require('glob')
 const path = require('path')
 const access = require('object-access')
@@ -77,9 +78,18 @@ class Options {
   }
 }
 
+const DEFAULT_LOADER_OPTIONS = {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true
+}
+
 const getProto = (proto_root, s) => {
   const proto_path = path.join(proto_root, s.proto)
-  const proto = grpc.load(proto_path)
+  const proto_def = proto_loader.loadSync(proto_path, DEFAULT_LOADER_OPTIONS)
+  const proto = grpc.loadPackageDefinition(proto_def)
 
   if (!s.package) {
     return proto

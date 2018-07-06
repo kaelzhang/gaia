@@ -21,7 +21,16 @@ test.after = () => {
 }
 
 test('sayHello', async t => {
-  const {message} = await Greeter.sayHello({name: 'world'})
+  const obj = Object.create(null)
+
+  Object.defineProperty(obj, 'name', {
+    get () {
+      return 'world'
+    },
+    enumerable: true
+  })
+
+  const {message} = await Greeter.sayHello(obj)
 
   t.is(message, 'Hello world')
 })
