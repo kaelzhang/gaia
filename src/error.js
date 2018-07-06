@@ -5,6 +5,10 @@ const KEY_METADATA = 'metadata'
 
 const get = (metadata, key) => {
   const [ret] = metadata.get(key)
+  if (typeof ret !== 'string') {
+    return
+  }
+
   return JSON.parse(ret)
 }
 
@@ -43,7 +47,12 @@ exports.unwrap = (err, props) => {
 
   const unwrapped = Object.create(null)
   props.forEach(prop => {
-    unwrapped[prop] = get(metadata, prop)
+    const value = get(metadata, prop)
+    if (value === undefined) {
+      return
+    }
+
+    unwrapped[prop] = value
   })
 
   return unwrapped

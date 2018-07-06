@@ -42,5 +42,17 @@ test('throws: should throws', async t => {
     return
   }
 
-  t.fail()
+  t.fail('should throw')
+})
+
+test('throws', async t => {
+  try {
+    await Greeter.throwsNoCode({})
+  } catch (err) {
+    t.is(err.message, 'custom error without code')
+    t.is('code' in err, false)
+    return
+  }
+
+  t.fail('show throw')
 })
