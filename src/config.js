@@ -11,7 +11,9 @@ const Config = shape({
     type: String,
     default: 'proto'
   },
-  error_props: any()
+  error_props: {
+    default: []
+  }
 })
 
 module.exports = absRoot => {
