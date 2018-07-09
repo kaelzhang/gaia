@@ -1,4 +1,4 @@
-const {test} = require('ava')
+const {test} = require('piapia')
 const hello = require('../example/hello')
 const {server, client} = hello
 
@@ -15,7 +15,9 @@ test.before(() => {
 })
 
 test.after(() => {
-  process.exit()
+  process.nextTick(() => {
+    process.exit()
+  })
 })
 
 test('sayHello', async t => {
@@ -33,26 +35,54 @@ test('sayHello', async t => {
   t.is(message, 'Hello world')
 })
 
-test('throws: should throws', async t => {
+const throws = async (t, fn, message) => {
   try {
-    await Greeter.throws({})
+    await fn()
   } catch (error) {
-    t.is(error.message, 'custom error')
-    t.is(error.code, 'CUSTOM_ERROR')
-    return
+    if (typeof message === 'function') {
+      message(error)
+      return
+    }
+
+    if (typeof message === 'string') {
+      t.is(error.message, message)
+      return
+    }
+
+    throw 'gaea test: invalid message'
   }
 
   t.fail('should throw')
+}
+
+test('throws: should throws', async t => {
+  await throws(
+    t,
+    () => Greeter.throws({}),
+    err => {
+      t.is(err.message, 'custom error')
+      t.is(err.code, 'CUSTOM_ERROR')
+    }
+  )
 })
 
 test('throws', async t => {
-  try {
-    await Greeter.throwsNoCode({})
-  } catch (err) {
-    t.is(err.message, 'custom error without code')
-    t.is('code' in err, false)
-    return
-  }
+  await throws(
+    t,
+    () => Greeter.throwsNoCode({}),
+    err => {
+      t.is(err.message, 'custom error without code')
+      t.is('code' in err, false)
+    }
+  )
+})
 
-  t.fail('show throw')
+test('rejects', t => {
+  return Greeter.rejects({})
+  .then(
+    () => t.fail('show throw'),
+    err => {
+      t.is(err.message, 'error rejected')
+    }
+  )
 })

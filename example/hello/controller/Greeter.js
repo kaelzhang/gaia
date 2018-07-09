@@ -24,6 +24,11 @@ exports.methods = {
     throw {
       message: 'custom error without code'
     }
+  },
+
+  rejects () {
+    const error = new Error('error rejected')
+    return Promise.reject(error)
   }
 }
 
