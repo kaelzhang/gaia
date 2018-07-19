@@ -39,19 +39,20 @@ exports.wrap = (err, props) => {
 exports.unwrap = (err, props) => {
   const metadata = err[KEY_METADATA]
   const is_gaea = get(metadata, KEY_GAEA)
+
   if (!is_gaea) {
     return err
   }
 
-  const unwrapped = Object.create(null)
+  const wrapped = new Error('unknown error')
   props.forEach(prop => {
     const value = get(metadata, prop)
     if (value === undefined) {
       return
     }
 
-    unwrapped[prop] = value
+    wrapped[prop] = value
   })
 
-  return unwrapped
+  return wrapped
 }

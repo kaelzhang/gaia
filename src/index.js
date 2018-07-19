@@ -4,7 +4,6 @@ const glob = require('glob')
 const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
-const {isArray} = require('core-util-is')
 
 const readConfig = require('./config')
 const {wrap, unwrap} = require('./error')
@@ -50,14 +49,6 @@ class Options {
     this.proto_root = path.resolve(root, proto_root)
     this.service_root = path.resolve(root, service_root)
     this.error_props = error_props
-
-    if (!isArray(error_props)) {
-      throw new TypeError('error_props must be an array of string')
-    }
-
-    if (error_props.length === 0) {
-      throw new TypeError('error_props must not be an empty array')
-    }
 
     this._services = null
   }
@@ -155,6 +146,9 @@ const wrapClientMethods = (real_client, methods, error_props) => {
       return new Promise((resolve, reject) => {
         real_client[name](req, (err, res) => {
           if (err) {
+            debug('wrapClientMethod: error: %s',
+              err && err.stack || err.message || err)
+
             return reject(unwrap(err, error_props))
           }
 
