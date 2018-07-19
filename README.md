@@ -51,11 +51,18 @@ const run = async () => {
 run()
 ```
 
-## How to use `gaea` to build a grpc service
+## Error handling
+
+config.js
 
 ```js
-// TODO
+module.exports = {
+  ...
+  error_props: ['code', 'message', 'stack']
+}
 ```
+
+Then if the server throws an `error`, gaea will collect `error.code`, `error.message` and `error.stack`, and send them to its clients, while other properties will be omitted.
 
 ## License
 
