@@ -15,6 +15,7 @@ const STR_DOT = '.'
 const isDir = something => !!something && REGEX_IS_DIR.test(something)
 const getServiceName_file = filename => path.basename(filename, STR_JS)
 const getServiceName_dir = path.basename
+const DEFAULT_ERROR_PROPS = ['code', 'message']
 
 exports.load = root => {
   return new Gaea(root)
@@ -43,7 +44,7 @@ class Options {
     this.port = c.port
     this.proto_root = path.resolve(root, c.proto_root)
     this.service_root = path.resolve(root, c.service_root)
-    this.error_props = c.error_props || []
+    this.error_props = c.error_props || DEFAULT_ERROR_PROPS
     this._services = null
   }
 
