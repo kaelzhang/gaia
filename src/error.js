@@ -1,11 +1,12 @@
 const grpc = require('grpc')
+const {isString} = require('core-util-is')
 
 const KEY_GAEA = 'is_node_gaea'
 const KEY_METADATA = 'metadata'
 
 const get = (metadata, key) => {
   const [ret] = metadata.get(key)
-  if (typeof ret !== 'string') {
+  if (!isString(ret)) {
     return
   }
 
@@ -17,15 +18,12 @@ const set = (metadata, key, value) => {
 }
 
 exports.wrap = (err, props) => {
-  if (props.length === 0) {
-    return err
-  }
-
   const metadata = new grpc.Metadata()
   set(metadata, KEY_GAEA, true)
 
   props.forEach(prop => {
     const value = err[prop]
+    // `grpc.Metadata` will fail if the value is undefined
     if (value === undefined) {
       return
     }

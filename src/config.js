@@ -12,7 +12,7 @@ const Config = shape({
     default: 'proto'
   },
   error_props: {
-    default: []
+    default: ['code', 'message']
   }
 })
 

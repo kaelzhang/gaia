@@ -4,6 +4,7 @@ const glob = require('glob')
 const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
+const {isArray} = require('core-util-is')
 
 const readConfig = require('./config')
 const {wrap, unwrap} = require('./error')
@@ -15,7 +16,6 @@ const STR_DOT = '.'
 const isDir = something => !!something && REGEX_IS_DIR.test(something)
 const getServiceName_file = filename => path.basename(filename, STR_JS)
 const getServiceName_dir = path.basename
-const DEFAULT_ERROR_PROPS = ['code', 'message']
 
 exports.load = root => {
   return new Gaea(root)
@@ -39,12 +39,26 @@ class Gaea {
 class Options {
   constructor (root) {
     root = path.resolve(root)
-    const c = this.config = readConfig(root)
+    const {
+      port,
+      proto_root,
+      service_root,
+      error_props
+    } = this.config = readConfig(root)
 
-    this.port = c.port
-    this.proto_root = path.resolve(root, c.proto_root)
-    this.service_root = path.resolve(root, c.service_root)
-    this.error_props = c.error_props || DEFAULT_ERROR_PROPS
+    this.port = port
+    this.proto_root = path.resolve(root, proto_root)
+    this.service_root = path.resolve(root, service_root)
+    this.error_props = error_props
+
+    if (!isArray(error_props)) {
+      throw new TypeError('error_props must be an array of string')
+    }
+
+    if (error_props.length === 0) {
+      throw new TypeError('error_props must not be an empty array')
+    }
+
     this._services = null
   }
 
