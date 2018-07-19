@@ -146,10 +146,12 @@ const wrapClientMethods = (real_client, methods, error_props) => {
       return new Promise((resolve, reject) => {
         real_client[name](req, (err, res) => {
           if (err) {
-            debug('wrapClientMethod: error: %s',
-              err && err.stack || err.message || err)
+            const error = unwrap(err, error_props)
 
-            return reject(unwrap(err, error_props))
+            debug('wrapClientMethod: error: %s',
+              error.stack || error.message || error)
+
+            return reject(error)
           }
 
           resolve(res)
