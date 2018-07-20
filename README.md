@@ -32,7 +32,7 @@ Start server:
 
 ```js
 const {server} = require('./example/hello')
-server.start()
+server.listen(50051)
 ```
 
 Run client:

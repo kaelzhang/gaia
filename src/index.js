@@ -4,6 +4,7 @@ const glob = require('glob')
 const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
+const {isNumber} = require('core-util-is')
 
 const readConfig = require('./config')
 const {wrap, unwrap} = require('./error')
@@ -39,13 +40,11 @@ class Options {
   constructor (root) {
     root = path.resolve(root)
     const {
-      port,
       proto_root,
       service_root,
       error_props
     } = this.config = readConfig(root)
 
-    this.port = port
     this.proto_root = path.resolve(root, proto_root)
     this.service_root = path.resolve(root, service_root)
     this.error_props = error_props
@@ -168,11 +167,14 @@ class Server {
     this._options = options
   }
 
-  start () {
+  listen (port) {
+    if (!isNumber(port)) {
+      throw new TypeError(`port must be a number, but got \`${port}\``)
+    }
+
     const server = new grpc.Server()
     const {
       service,
-      port,
       proto_root
     } = this._options
 

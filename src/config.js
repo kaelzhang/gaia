@@ -3,7 +3,6 @@ const path = require('path')
 const {isArray} = require('core-util-is')
 
 const Config = shape({
-  port: Number,
   service_root: {
     type: String,
     default: 'service'

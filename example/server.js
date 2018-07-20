@@ -4,4 +4,4 @@ Error.stackTraceLimit = Infinity
 
 const {server} = require('./hello')
 
-server.start()
+server.listen(50051)

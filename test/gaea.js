@@ -5,7 +5,7 @@ const {server, client} = hello
 let Greeter
 
 test.before(() => {
-  server.start()
+  server.listen(50051)
 
   const {
     helloworld
