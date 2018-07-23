@@ -1,6 +1,6 @@
 {
   "name": "gaea",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
@@ -31,11 +31,11 @@
     "url": "https://github.com/kaelzhang/gaea/issues"
   },
   "devDependencies": {
-    "codecov": "^3.0.2",
+    "codecov": "^3.0.4",
     "piapia": "^1.1.0"
   },
   "dependencies": {
-    "@grpc/proto-loader": "^0.1.0",
+    "@grpc/proto-loader": "^0.3.0",
     "core-util-is": "^1.0.2",
     "glob": "^7.1.2",
     "grpc": "^1.13.0",
