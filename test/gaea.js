@@ -1,5 +1,9 @@
 const {test} = require('piapia')
-const hello = require('../example/hello')
+const path = require('path')
+
+const fixture = sub => path.join(__dirname, 'fixtures', sub)
+
+const hello = require(fixture('hello'))
 const {server, client} = hello
 
 let Greeter

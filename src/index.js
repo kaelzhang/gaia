@@ -1,6 +1,5 @@
 const grpc = require('grpc')
 const proto_loader = require('@grpc/proto-loader')
-const glob = require('glob')
 const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
@@ -17,10 +16,6 @@ const isDir = something => !!something && REGEX_IS_DIR.test(something)
 const getServiceName_file = filename => path.basename(filename, STR_JS)
 const getServiceName_dir = path.basename
 
-exports.load = root => {
-  return new Gaea(root)
-}
-
 class Gaea {
   constructor (root) {
     this._options = new Options(root)
@@ -36,55 +31,6 @@ class Gaea {
   }
 }
 
-class Options {
-  constructor (root) {
-    root = path.resolve(root)
-    const {
-      proto_root,
-      service_root,
-      error_props
-    } = this.config = readConfig(root)
-
-    this.proto_root = path.resolve(root, proto_root)
-    this.service_root = path.resolve(root, service_root)
-    this.error_props = error_props
-
-    this._services = null
-  }
-
-  get service () {
-    if (this._services) {
-      return this._services
-    }
-
-    const services = this._services = {}
-    const children = glob.sync('*', {
-      cwd: this.service_root,
-      mark: true
-    })
-
-    if (children.length === 0) {
-      throw new Error('no service found')
-    }
-
-    children.forEach(child => {
-      const name = isDir(child)
-        ? getServiceName_dir(child)
-        : getServiceName_file(child)
-      const abspath = path.join(this.service_root, child)
-
-      try {
-        this._services[name] = require(abspath)
-      } catch (e) {
-        debug('fails to require service %s', e.stack)
-        throw new Error(`fails to require service, ${abspath}`)
-      }
-    })
-
-    return services
-  }
-}
-
 const DEFAULT_LOADER_OPTIONS = {
   keepCase: true,
   longs: String,
@@ -93,9 +39,53 @@ const DEFAULT_LOADER_OPTIONS = {
   oneofs: true
 }
 
+class Options {
+  constructor (root) {
+    this.config = readConfig(root)
+
+    this._services = null
+  }
+
+  get services () {
+    if (this._services) {
+      return this._services
+    }
+
+    const services = this._services = this.config.services
+
+    services.forEach(service => {
+      const {proto} = service
+      const proto_def = proto_loader.loadSync(
+        proto_path, DEFAULT_LOADER_OPTIONS
+      )
+
+      service.proto_def = proto_def
+
+      console.log(proto_def)
+    })
+
+    // children.forEach(child => {
+    //   const name = isDir(child)
+    //     ? getServiceName_dir(child)
+    //     : getServiceName_file(child)
+    //   const abspath = path.join(this.service_root, child)
+
+    //   try {
+    //     this._services[name] = require(abspath)
+    //   } catch (e) {
+    //     debug('fails to require service %s', e.stack)
+    //     throw new Error(`fails to require service, ${abspath}`)
+    //   }
+    // })
+
+    return services
+  }
+}
+
 const getProto = (proto_root, s) => {
   const proto_path = path.join(proto_root, s.proto)
-  const proto_def = proto_loader.loadSync(proto_path, DEFAULT_LOADER_OPTIONS)
+
+
   const proto = grpc.loadPackageDefinition(proto_def)
 
   if (!s.package) {
@@ -224,3 +214,5 @@ class Client {
     return clients
   }
 }
+
+exports.load = root => new Gaea(root)
