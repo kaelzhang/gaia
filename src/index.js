@@ -9,73 +9,7 @@ const forEach = require('lodash.foreach')
 const readConfig = require('./config')
 const {wrap, unwrap} = require('./error')
 
-const REGEX_IS_DIR = /\/$/
-const STR_JS = '.js'
 const STR_DOT = '.'
-
-const isDir = something => !!something && REGEX_IS_DIR.test(something)
-const getServiceName_file = filename => path.basename(filename, STR_JS)
-const getServiceName_dir = path.basename
-
-class Gaea {
-  constructor (root) {
-    this._options = readConfig(root)
-console.log(this._options.protos)
-    this.client = this.client.bind(this)
-  }
-
-  client (host) {
-    return new Client(host, this._options).create()
-  }
-
-  get server () {
-    return new Server(this._options)
-  }
-}
-
-// const getProto = (proto_root, s) => {
-//   const proto_path = path.join(proto_root, s.proto)
-
-//   const proto = grpc.loadPackageDefinition(proto_def)
-
-//   if (!s.package) {
-//     return proto
-//   }
-
-//   const ret = access(proto, s.package)
-
-//   if (!ret) {
-//     throw new Error('proto not found')
-//   }
-
-//   return ret
-// }
-
-// const wrapClientMethods = (real_client, methods, error_props) => {
-//   const client = {}
-
-//   Object.keys(methods).forEach(name => {
-//     client[name] = req => {
-//       return new Promise((resolve, reject) => {
-//         real_client[name](req, (err, res) => {
-//           if (err) {
-//             const error = unwrap(err, error_props)
-
-//             debug('wrapClientMethod: error: %s',
-//               error.stack || error.message || error)
-
-//             return reject(error)
-//           }
-
-//           resolve(res)
-//         })
-//       })
-//     }
-//   })
-
-//   return client
-// }
-
 const packageToPaths = pkg => pkg.split(STR_DOT)
 const serviceMethodNames = service_def =>
   Object.keys(service_def)
@@ -96,6 +30,30 @@ const wrapServerMethod = (method, error_props) => {
   }
 }
 
+const iterateProtos = (protos, iteratee) => {
+  protos.forEach(({
+    def
+  }) => {
+    const grpc_object = grpc.loadPackageDefinition(def)
+
+    forEach(def, (
+      // Greeter methods
+      service_def,
+      // 'helloworld.Greeter'
+      package_name
+    ) => {
+      const service = access(grpc_object, package_name)
+      const methods = serviceMethodNames(service_def)
+
+      iteratee({
+        service,
+        package_name,
+        methods
+      })
+    })
+  })
+}
+
 class Server {
   constructor (options) {
     this._options = options
@@ -110,22 +68,12 @@ class Server {
       error_props
     } = this._options
 
-    protos.forEach(({
-      def
+    iterateProtos(protos, ({
+      service,
+      package_name,
+      methods
     }) => {
-      const proto = grpc.loadPackageDefinition(def)
-
-      forEach(def, (
-        // Greeter methods
-        service_def,
-        // 'helloworld.Greeter'
-        package_name
-      ) => {
-        const service = access(proto, package_name)
-        const required_methods = serviceMethodNames(service_def)
-console.log('required methods', required_methods)
-        this._addService(service, package_name, required_methods)
-      })
+      this._addService(service.service, package_name, methods)
     })
   }
 
@@ -141,6 +89,7 @@ console.log('required methods', required_methods)
         methods: require(p)
       }
     } catch (err) {
+      // TODO:better error message for different situations
       throw new Error(
         `fails to load service controller "${p}" for "${package_name}"`
       )
@@ -168,47 +117,89 @@ console.log('required methods', required_methods)
     this._server.addService(service, wrapped)
   }
 
+  // TODO: more options to define server credentials
   listen (port) {
     if (!isNumber(port)) {
       throw new TypeError(`port must be a number, but got \`${port}\``)
     }
+
+    const server = this._server
 
     server.bind(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure())
     server.start()
   }
 }
 
-// class Client {
-//   constructor (host, options) {
-//     this._host = host
-//     this._options = options
-//     this._services = {}
-//   }
+const wrapClientMethods = (real_client, methods, error_props) => {
+  const client = {}
 
-//   create () {
-//     const {
-//       services,
-//       proto_root
-//     } = this._options
+  methods.forEach(name => {
+    client[name] = req => {
+      return new Promise((resolve, reject) => {
+        real_client[name](req, (err, res) => {
+          if (err) {
+            const error = unwrap(err, error_props)
 
-//     const clients = {}
+            debug('wrapClientMethod: error: %s',
+              error.stack || error.message || error)
 
-//     Object.keys(service).forEach(name => {
-//       const s = service[name]
-//       const properties = s.package
-//         ? s.package.split(STR_DOT).concat(name)
-//         : [name]
+            return reject(error)
+          }
 
-//       const proto = getProto(proto_root, s)
-//       const client = new proto[name](
-//         this._host, grpc.credentials.createInsecure())
+          resolve(res)
+        })
+      })
+    }
+  })
 
-//       access.set(clients, properties,
-//         wrapClientMethods(client, s.methods, this._options.error_props))
-//     })
+  return client
+}
 
-//     return clients
-//   }
-// }
+class Client {
+  constructor (host, options) {
+    this._host = host
+    this._options = options
+  }
+
+  create () {
+    const {
+      protos,
+      error_props
+    } = this._options
+
+    const clients = {}
+
+    iterateProtos(protos, ({
+      service,
+      package_name,
+      methods
+    }) => {
+      const client = new service(this._host, grpc.credentials.createInsecure())
+
+      access.set(
+        clients, package_name,
+        wrapClientMethods(client, methods, error_props)
+      )
+    })
+
+    return clients
+  }
+}
+
+class Gaea {
+  constructor (root) {
+    this._options = readConfig(root)
+
+    this.client = this.client.bind(this)
+  }
+
+  client (host) {
+    return new Client(host, this._options).create()
+  }
+
+  get server () {
+    return new Server(this._options)
+  }
+}
 
 exports.load = root => new Gaea(root)

@@ -7,6 +7,7 @@ const hello = require(fixture('hello'))
 const {server, client} = hello
 
 let Greeter
+let Greeter2
 
 test.before(() => {
   server.listen(50051)
@@ -16,6 +17,7 @@ test.before(() => {
   } = client('localhost:50051')
 
   Greeter = helloworld.Greeter
+  Greeter2 = helloworld.Greeter2
 })
 
 test.after(() => {
@@ -39,54 +41,54 @@ test('sayHello', async t => {
   t.is(message, 'Hello world')
 })
 
-// const throws = async (t, fn, message) => {
-//   try {
-//     await fn()
-//   } catch (error) {
-//     if (typeof message === 'function') {
-//       message(error)
-//       return
-//     }
+const throws = async (t, fn, message) => {
+  try {
+    await fn()
+  } catch (error) {
+    if (typeof message === 'function') {
+      message(error)
+      return
+    }
 
-//     if (typeof message === 'string') {
-//       t.is(error.message, message)
-//       return
-//     }
+    if (typeof message === 'string') {
+      t.is(error.message, message)
+      return
+    }
 
-//     throw 'gaea test: invalid message'
-//   }
+    throw 'gaea test: invalid message'
+  }
 
-//   t.fail('should throw')
-// }
+  t.fail('should throw')
+}
 
-// test('throws: should throws', async t => {
-//   await throws(
-//     t,
-//     () => Greeter.throws({}),
-//     err => {
-//       t.is(err.message, 'custom error')
-//       t.is(err.code, 'CUSTOM_ERROR')
-//     }
-//   )
-// })
+test('throws: should throws', async t => {
+  await throws(
+    t,
+    () => Greeter2.throws({}),
+    err => {
+      t.is(err.message, 'custom error')
+      t.is(err.code, 'CUSTOM_ERROR')
+    }
+  )
+})
 
-// test('throws', async t => {
-//   await throws(
-//     t,
-//     () => Greeter.throwsNoCode({}),
-//     err => {
-//       t.is(err.message, 'custom error without code')
-//       t.is('code' in err, false)
-//     }
-//   )
-// })
+test('throws', async t => {
+  await throws(
+    t,
+    () => Greeter2.throwsNoCode({}),
+    err => {
+      t.is(err.message, 'custom error without code')
+      t.is('code' in err, false)
+    }
+  )
+})
 
-// test('rejects', t => {
-//   return Greeter.rejects({})
-//   .then(
-//     () => t.fail('show throw'),
-//     err => {
-//       t.is(err.message, 'error rejected')
-//     }
-//   )
-// })
+test('rejects', t => {
+  return Greeter2.rejects({})
+  .then(
+    () => t.fail('show throw'),
+    err => {
+      t.is(err.message, 'error rejected')
+    }
+  )
+})

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "npm run test-no-cov",
-    "test-no-cov": "NODE_DEBUG=gaea piapia test/*.js --coverage",
+    "test-no-cov": "piapia test/*.js --coverage",
     "posttest": "piapia --coverage-report=html && codecov",
     "lint": "eslint ."
   },
