@@ -15,19 +15,17 @@ const serviceMethodNames = service_def =>
   Object.keys(service_def)
   .map(name => service_def[name].originalName)
 
-const wrapServerMethod = (method, error_props) => {
-  return (call, callback) => {
-    Promise.resolve()
-    .then(() => method(call.request, call))
-    .then(
-      res => callback(null, res),
-      err => {
-        debug('wrapServerMethod: error: %s', err && err.stack || err.message || err)
+const wrapServerMethod = (method, error_props) => (call, callback) => {
+  Promise.resolve()
+  .then(() => method(call.request, call))
+  .then(
+    res => callback(null, res),
+    err => {
+      debug('wrapServerMethod: error: %s', err && err.stack || err.message || err)
 
-        callback(wrap(err, error_props))
-      }
-    )
-  }
+      callback(wrap(err, error_props))
+    }
+  )
 }
 
 const iterateProtos = (protos, iteratee) => {
@@ -64,8 +62,7 @@ class Server {
 
   _init () {
     const {
-      protos,
-      error_props
+      protos
     } = this._options
 
     iterateProtos(protos, ({
@@ -134,22 +131,20 @@ const wrapClientMethods = (real_client, methods, error_props) => {
   const client = {}
 
   methods.forEach(name => {
-    client[name] = req => {
-      return new Promise((resolve, reject) => {
-        real_client[name](req, (err, res) => {
-          if (err) {
-            const error = unwrap(err, error_props)
+    client[name] = req => new Promise((resolve, reject) => {
+      real_client[name](req, (err, res) => {
+        if (err) {
+          const error = unwrap(err, error_props)
 
-            debug('wrapClientMethod: error: %s',
-              error.stack || error.message || error)
+          debug('wrapClientMethod: error: %s',
+            error.stack || error.message || error)
 
-            return reject(error)
-          }
+          return reject(error)
+        }
 
-          resolve(res)
-        })
+        resolve(res)
       })
-    }
+    })
   })
 
   return client
@@ -170,11 +165,11 @@ class Client {
     const clients = {}
 
     iterateProtos(protos, ({
-      service,
+      service: Service,
       package_name,
       methods
     }) => {
-      const client = new service(this._host, grpc.credentials.createInsecure())
+      const client = new Service(this._host, grpc.credentials.createInsecure())
 
       access.set(
         clients, package_name,

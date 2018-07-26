@@ -1,6 +1,6 @@
 const {shape} = require('skema')
 const path = require('path')
-const {isArray, isObject, isString} = require('core-util-is')
+const {isArray, isString} = require('core-util-is')
 const glob = require('glob')
 const proto_loader = require('@grpc/proto-loader')
 
@@ -62,7 +62,11 @@ const Config = shape({
       })
     },
     set (protos) {
-      return protos.map(p => {
+      return protos.map((p, i) => {
+        if (!isString(p)) {
+          throw new TypeError(`config.protos[${i}] must be a string`)
+        }
+
         const resolved = path.resolve(this.parent.proto_root, p)
 
         return {

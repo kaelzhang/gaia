@@ -1,6 +1,4 @@
-const grpc = require('grpc')
-
-exports.methods = {
+module.exports = {
   sayHello ({
     name
   }) {
@@ -31,6 +29,3 @@ exports.methods = {
     return Promise.reject(error)
   }
 }
-
-exports.proto = 'helloworld.proto'
-exports.package = 'helloworld'

@@ -6,6 +6,7 @@ module.exports = {
   },
 
   throwsNoCode () {
+    /* eslint no-throw-literal: "off" */
     throw {
       message: 'custom error without code'
     }

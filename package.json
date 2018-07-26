@@ -1,11 +1,11 @@
 {
   "name": "gaea",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
     "test": "npm run test-no-cov",
-    "test-no-cov": "piapia test/*.js --coverage",
+    "test-no-cov": "npm run lint && piapia test/*.js --coverage",
     "posttest": "piapia --coverage-report=html && codecov",
     "lint": "eslint ."
   },

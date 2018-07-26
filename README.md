@@ -58,7 +58,8 @@ config.js
 ```js
 module.exports = {
   ...
-  error_props: ['code', 'message', 'stack']
+  error_props: ['code', 'message', 'stack'],
+  protos: ['helloworld.proto']
 }
 ```
 

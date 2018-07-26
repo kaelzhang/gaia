@@ -2,9 +2,12 @@ const {test} = require('piapia')
 const path = require('path')
 
 const fixture = sub => path.join(__dirname, 'fixtures', sub)
+const hello_root = require.resolve(fixture('hello'))
 
-const hello = require(fixture('hello'))
-const {server, client} = hello
+const {server} = require(hello_root)
+delete require.cache[hello_root]
+
+const {client} = require(hello_root)
 
 let Greeter
 let Greeter2
@@ -16,6 +19,7 @@ test.before(() => {
     helloworld
   } = client('localhost:50051')
 
+  /* eslint prefer-destructuring: "off" */
   Greeter = helloworld.Greeter
   Greeter2 = helloworld.Greeter2
 })
@@ -55,7 +59,7 @@ const throws = async (t, fn, message) => {
       return
     }
 
-    throw 'gaea test: invalid message'
+    throw new Error('gaea test: invalid message')
   }
 
   t.fail('should throw')
@@ -83,12 +87,12 @@ test('throws', async t => {
   )
 })
 
-test('rejects', t => {
-  return Greeter2.rejects({})
+test('rejects', t =>
+  Greeter2.rejects({})
   .then(
     () => t.fail('show throw'),
     err => {
       t.is(err.message, 'error rejected')
     }
   )
-})
+)
