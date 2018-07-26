@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "npm run test-no-cov",
-    "test-no-cov": "npm run lint && piapia test/*.js --coverage",
+    "test-no-cov": "NODE_DEBUG=gaea piapia test/*.js --coverage",
     "posttest": "piapia --coverage-report=html && codecov",
     "lint": "eslint ."
   },
@@ -43,6 +43,7 @@
     "core-util-is": "^1.0.2",
     "glob": "^7.1.2",
     "grpc": "^1.13.0",
+    "lodash.foreach": "^4.5.0",
     "object-access": "^2.0.1",
     "skema": "^9.3.5"
   }

@@ -2,34 +2,26 @@ const {shape} = require('skema')
 const path = require('path')
 const {isArray, isObject, isString} = require('core-util-is')
 const glob = require('glob')
+const proto_loader = require('@grpc/proto-loader')
+
+const DEFAULT_LOADER_OPTIONS = {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true
+}
+
+const load = proto_path => {
+  try {
+    return proto_loader.loadSync(proto_path, DEFAULT_LOADER_OPTIONS)
+  } catch (err) {
+    throw new Error(`fails to load proto file "${proto_path}": ${err.message}`)
+  }
+}
 
 function setPath (p) {
   return path.resolve(this.parent.root, p)
-}
-
-function nameToService (name) {
-  return {
-    proto: path.join(this.parent.proto_root, `${name}.proto`),
-    service: path.join(this.parent.service_root, name)
-  }
-}
-
-function checkService ({
-  proto,
-  service
-}, i) {
-  if (!isString(proto)) {
-    throw new Error(`invalid config.service[${i}].proto`)
-  }
-
-  if (!isString(service)) {
-    throw new Error(`invalid config.service[${i}].service`)
-  }
-
-  return {
-    proto: setPath.call(this, proto),
-    service: setPath.call(this, service)
-  }
 }
 
 const Config = shape({
@@ -62,33 +54,22 @@ const Config = shape({
       return true
     }
   },
-  services: {
+  protos: {
     default () {
-      const protos = glob.sync('*.proto', {
+      return glob.sync('*.proto', {
         cwd: this.parent.proto_root,
         mark: true
       })
-
-      return protos.map(p => path.basename(p, '.proto'))
     },
-    set (services) {
-      const parsed = services.map((service, i) => {
-        if (isString(service)) {
-          return nameToService.call(this, service)
-        }
+    set (protos) {
+      return protos.map(p => {
+        const resolved = path.resolve(this.parent.proto_root, p)
 
-        if (isObject(service)) {
-          return checkService.call(this, service, i)
+        return {
+          path: resolved,
+          def: load(resolved)
         }
-
-        throw new Error(`invalid config.services[${i}]`)
       })
-
-      if (parsed.length === 0) {
-        throw new Error('no services found')
-      }
-
-      return parsed
     }
   }
 })

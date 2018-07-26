@@ -4,6 +4,9 @@ package helloworld;
 
 service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+service Greeter2 {
   rpc Throws (EmptyMessage) returns (EmptyMessage) {}
   rpc ThrowsNoCode (EmptyMessage) returns (EmptyMessage) {}
   rpc Rejects (EmptyMessage) returns (EmptyMessage) {}

@@ -1,9 +1,10 @@
 const grpc = require('grpc')
-const proto_loader = require('@grpc/proto-loader')
+
 const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
 const {isNumber} = require('core-util-is')
+const forEach = require('lodash.foreach')
 
 const readConfig = require('./config')
 const {wrap, unwrap} = require('./error')
@@ -18,7 +19,8 @@ const getServiceName_dir = path.basename
 
 class Gaea {
   constructor (root) {
-    this._options = new Options(root)
+    this._options = readConfig(root)
+console.log(this._options.protos)
     this.client = this.client.bind(this)
   }
 
@@ -31,75 +33,53 @@ class Gaea {
   }
 }
 
-const DEFAULT_LOADER_OPTIONS = {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true
-}
+// const getProto = (proto_root, s) => {
+//   const proto_path = path.join(proto_root, s.proto)
 
-class Options {
-  constructor (root) {
-    this.config = readConfig(root)
+//   const proto = grpc.loadPackageDefinition(proto_def)
 
-    this._services = null
-  }
+//   if (!s.package) {
+//     return proto
+//   }
 
-  get services () {
-    if (this._services) {
-      return this._services
-    }
+//   const ret = access(proto, s.package)
 
-    const services = this._services = this.config.services
+//   if (!ret) {
+//     throw new Error('proto not found')
+//   }
 
-    services.forEach(service => {
-      const {proto} = service
-      const proto_def = proto_loader.loadSync(
-        proto_path, DEFAULT_LOADER_OPTIONS
-      )
+//   return ret
+// }
 
-      service.proto_def = proto_def
+// const wrapClientMethods = (real_client, methods, error_props) => {
+//   const client = {}
 
-      console.log(proto_def)
-    })
+//   Object.keys(methods).forEach(name => {
+//     client[name] = req => {
+//       return new Promise((resolve, reject) => {
+//         real_client[name](req, (err, res) => {
+//           if (err) {
+//             const error = unwrap(err, error_props)
 
-    // children.forEach(child => {
-    //   const name = isDir(child)
-    //     ? getServiceName_dir(child)
-    //     : getServiceName_file(child)
-    //   const abspath = path.join(this.service_root, child)
+//             debug('wrapClientMethod: error: %s',
+//               error.stack || error.message || error)
 
-    //   try {
-    //     this._services[name] = require(abspath)
-    //   } catch (e) {
-    //     debug('fails to require service %s', e.stack)
-    //     throw new Error(`fails to require service, ${abspath}`)
-    //   }
-    // })
+//             return reject(error)
+//           }
 
-    return services
-  }
-}
+//           resolve(res)
+//         })
+//       })
+//     }
+//   })
 
-const getProto = (proto_root, s) => {
-  const proto_path = path.join(proto_root, s.proto)
+//   return client
+// }
 
-
-  const proto = grpc.loadPackageDefinition(proto_def)
-
-  if (!s.package) {
-    return proto
-  }
-
-  const ret = access(proto, s.package)
-
-  if (!ret) {
-    throw new Error('proto not found')
-  }
-
-  return ret
-}
+const packageToPaths = pkg => pkg.split(STR_DOT)
+const serviceMethodNames = service_def =>
+  Object.keys(service_def)
+  .map(name => service_def[name].originalName)
 
 const wrapServerMethod = (method, error_props) => {
   return (call, callback) => {
@@ -116,45 +96,76 @@ const wrapServerMethod = (method, error_props) => {
   }
 }
 
-const wrapServerMethods = (methods, error_props) => {
-  const wrapped = {}
-  Object.keys(methods).forEach(name => {
-    const method = methods[name]
-
-    wrapped[name] = wrapServerMethod(method, error_props)
-  })
-
-  return wrapped
-}
-
-const wrapClientMethods = (real_client, methods, error_props) => {
-  const client = {}
-
-  Object.keys(methods).forEach(name => {
-    client[name] = req => {
-      return new Promise((resolve, reject) => {
-        real_client[name](req, (err, res) => {
-          if (err) {
-            const error = unwrap(err, error_props)
-
-            debug('wrapClientMethod: error: %s',
-              error.stack || error.message || error)
-
-            return reject(error)
-          }
-
-          resolve(res)
-        })
-      })
-    }
-  })
-
-  return client
-}
-
 class Server {
   constructor (options) {
     this._options = options
+    this._server = new grpc.Server()
+
+    this._init()
+  }
+
+  _init () {
+    const {
+      protos,
+      error_props
+    } = this._options
+
+    protos.forEach(({
+      def
+    }) => {
+      const proto = grpc.loadPackageDefinition(def)
+
+      forEach(def, (
+        // Greeter methods
+        service_def,
+        // 'helloworld.Greeter'
+        package_name
+      ) => {
+        const service = access(proto, package_name)
+        const required_methods = serviceMethodNames(service_def)
+console.log('required methods', required_methods)
+        this._addService(service, package_name, required_methods)
+      })
+    })
+  }
+
+  _getServiceMethods (package_name) {
+    const p = path.join(
+      this._options.service_root,
+      ...packageToPaths(package_name)
+    )
+
+    try {
+      return {
+        service_path: p,
+        methods: require(p)
+      }
+    } catch (err) {
+      throw new Error(
+        `fails to load service controller "${p}" for "${package_name}"`
+      )
+    }
+  }
+
+  _addService (service, package_name, required_methods) {
+    const {
+      service_path,
+      methods
+    } = this._getServiceMethods(package_name)
+
+    const {error_props} = this._options
+
+    const wrapped = {}
+
+    required_methods.forEach(name => {
+      if (!(name in methods)) {
+        throw new Error(`method "${name}" is required in "${service_path}"`)
+      }
+
+      wrapped[name] = wrapServerMethod(methods[name], error_props)
+    })
+
+    this._server.addService(service, wrapped)
   }
 
   listen (port) {
@@ -162,57 +173,42 @@ class Server {
       throw new TypeError(`port must be a number, but got \`${port}\``)
     }
 
-    const server = new grpc.Server()
-    const {
-      service,
-      proto_root
-    } = this._options
-
-    Object.keys(service).forEach(name => {
-      const s = service[name]
-      const proto = getProto(proto_root, s)
-
-      // TODO, treat null
-      server.addService(proto[name].service,
-        wrapServerMethods(s.methods, this._options.error_props))
-    })
-
     server.bind(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure())
     server.start()
   }
 }
 
-class Client {
-  constructor (host, options) {
-    this._host = host
-    this._options = options
-    this._services = {}
-  }
+// class Client {
+//   constructor (host, options) {
+//     this._host = host
+//     this._options = options
+//     this._services = {}
+//   }
 
-  create () {
-    const {
-      service,
-      proto_root
-    } = this._options
+//   create () {
+//     const {
+//       services,
+//       proto_root
+//     } = this._options
 
-    const clients = {}
+//     const clients = {}
 
-    Object.keys(service).forEach(name => {
-      const s = service[name]
-      const properties = s.package
-        ? s.package.split(STR_DOT).concat(name)
-        : [name]
+//     Object.keys(service).forEach(name => {
+//       const s = service[name]
+//       const properties = s.package
+//         ? s.package.split(STR_DOT).concat(name)
+//         : [name]
 
-      const proto = getProto(proto_root, s)
-      const client = new proto[name](
-        this._host, grpc.credentials.createInsecure())
+//       const proto = getProto(proto_root, s)
+//       const client = new proto[name](
+//         this._host, grpc.credentials.createInsecure())
 
-      access.set(clients, properties,
-        wrapClientMethods(client, s.methods, this._options.error_props))
-    })
+//       access.set(clients, properties,
+//         wrapClientMethods(client, s.methods, this._options.error_props))
+//     })
 
-    return clients
-  }
-}
+//     return clients
+//   }
+// }
 
 exports.load = root => new Gaea(root)
