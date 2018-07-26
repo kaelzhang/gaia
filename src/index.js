@@ -1,5 +1,4 @@
 const grpc = require('grpc')
-
 const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
@@ -13,7 +12,13 @@ const STR_DOT = '.'
 const packageToPaths = pkg => pkg.split(STR_DOT)
 const serviceMethodNames = service_def =>
   Object.keys(service_def)
-  .map(name => service_def[name].originalName)
+  .map(name => {
+    const {originalName} = service_def[name]
+    return {
+      originalName,
+      name
+    }
+  })
 
 const wrapServerMethod = (method, error_props) => (call, callback) => {
   Promise.resolve()
@@ -103,12 +108,14 @@ class Server {
 
     const wrapped = {}
 
-    required_methods.forEach(name => {
-      if (!(name in methods)) {
+    required_methods.forEach(({name, originalName}) => {
+      const method = methods[name] || methods[originalName]
+
+      if (!method) {
         throw new Error(`method "${name}" is required in "${service_path}"`)
       }
 
-      wrapped[name] = wrapServerMethod(methods[name], error_props)
+      wrapped[name] = wrapServerMethod(method, error_props)
     })
 
     this._server.addService(service, wrapped)
@@ -130,8 +137,8 @@ class Server {
 const wrapClientMethods = (real_client, methods, error_props) => {
   const client = {}
 
-  methods.forEach(name => {
-    client[name] = req => new Promise((resolve, reject) => {
+  methods.forEach(({name, originalName}) => {
+    const method = req => new Promise((resolve, reject) => {
       real_client[name](req, (err, res) => {
         if (err) {
           const error = unwrap(err, error_props)
@@ -145,6 +152,12 @@ const wrapClientMethods = (real_client, methods, error_props) => {
         resolve(res)
       })
     })
+
+    client[name] = method
+
+    if (name !== originalName) {
+      client[originalName] = method
+    }
   })
 
   return client

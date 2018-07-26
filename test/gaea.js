@@ -96,3 +96,13 @@ test('rejects', t =>
     }
   )
 )
+
+test('Rejects', t =>
+  Greeter2.Rejects({})
+  .then(
+    () => t.fail('show throw'),
+    err => {
+      t.is(err.message, 'error rejected')
+    }
+  )
+)
