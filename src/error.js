@@ -38,6 +38,10 @@ exports.wrap = (err, props) => {
 
 exports.unwrap = (err, props) => {
   const metadata = err[KEY_METADATA]
+  if (!metadata) {
+    return err
+  }
+
   const is_gaea = get(metadata, KEY_GAEA)
 
   if (!is_gaea) {
