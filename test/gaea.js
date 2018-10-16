@@ -1,7 +1,7 @@
 const {test} = require('piapia')
 const path = require('path')
 
-const fixture = sub => path.join(__dirname, 'fixtures', sub)
+const fixture = (...sub) => path.join(__dirname, 'fixtures', ...sub)
 const hello_root = require.resolve(fixture('hello'))
 
 const {server} = require(hello_root)
@@ -13,7 +13,7 @@ let Greeter
 let Greeter2
 
 test.before(() => {
-  server.listen(50051)
+  server(fixture('hello', 'controller')).listen(50051)
 
   const {
     helloworld

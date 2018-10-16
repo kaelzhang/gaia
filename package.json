@@ -1,11 +1,12 @@
 {
   "name": "gaea",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
     "test": "npm run test-no-cov",
-    "test-no-cov": "npm run lint && piapia test/*.js --coverage",
+    "test-no-cov": "npm run lint && npm run test:only",
+    "test:only": "piapia test/*.js --coverage",
     "posttest": "piapia --coverage-report=html && codecov",
     "lint": "eslint ."
   },
@@ -18,7 +19,12 @@
     "url": "git://github.com/kaelzhang/gaea.git"
   },
   "keywords": [
-    "gaea"
+    "gaea",
+    "grpc",
+    "server",
+    "protobuf",
+    "manager",
+    "protobuf files holder"
   ],
   "engines": {
     "node": ">=10"
@@ -44,6 +50,7 @@
     "glob": "^7.1.2",
     "grpc": "^1.13.0",
     "lodash.foreach": "^4.5.0",
+    "make-array": "^1.0.5",
     "object-access": "^2.0.1",
     "skema": "^9.3.5"
   }

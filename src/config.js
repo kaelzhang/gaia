@@ -2,7 +2,8 @@ const {shape} = require('skema')
 const path = require('path')
 const {isArray, isString} = require('core-util-is')
 const glob = require('glob')
-const proto_loader = require('@grpc/proto-loader')
+const protoLoader = require('@grpc/proto-loader')
+const makeArray = require('make-array')
 
 const DEFAULT_LOADER_OPTIONS = {
   keepCase: true,
@@ -14,31 +15,18 @@ const DEFAULT_LOADER_OPTIONS = {
 
 const load = proto_path => {
   try {
-    return proto_loader.loadSync(proto_path, DEFAULT_LOADER_OPTIONS)
+    return protoLoader.loadSync(proto_path, DEFAULT_LOADER_OPTIONS)
   } catch (err) {
     throw new Error(`fails to load proto file "${proto_path}": ${err.message}`)
   }
 }
 
-function setPath (p) {
-  return path.resolve(this.parent.root, p)
-}
-
 const Config = shape({
-  root: {
-    default (root) {
-      return root
-    }
-  },
-  service_root: {
-    type: String,
-    default: 'service',
-    set: setPath
-  },
   proto_root: {
-    type: String,
-    default: 'proto',
-    set: setPath
+    validate: isString,
+    set (p) {
+      return path.resolve(p)
+    }
   },
   error_props: {
     default: ['code', 'message'],
@@ -62,7 +50,7 @@ const Config = shape({
       })
     },
     set (protos) {
-      return protos.map((p, i) => {
+      return makeArray(protos).map((p, i) => {
         if (!isString(p)) {
           throw new TypeError(`config.protos[${i}] must be a string`)
         }
@@ -78,9 +66,4 @@ const Config = shape({
   }
 })
 
-module.exports = abs_root => {
-  abs_root = path.resolve(abs_root)
-  const config = require(path.join(abs_root, 'config'))
-
-  return Config.from(config, [abs_root])
-}
+module.exports = config => Config.from(config)

@@ -5,7 +5,7 @@ const debug = require('util').debuglog('gaea')
 const {isNumber} = require('core-util-is')
 const forEach = require('lodash.foreach')
 
-const readConfig = require('./config')
+const checkConfig = require('./config')
 const {wrap, unwrap} = require('./error')
 
 const STR_DOT = '.'
@@ -20,13 +20,16 @@ const serviceMethodNames = service_def =>
     }
   })
 
+const printError = (message, err) =>
+  err && debug(message, err.stack || err.message || err)
+
 const wrapServerMethod = (method, error_props) => (call, callback) => {
   Promise.resolve()
   .then(() => method(call.request, call))
   .then(
     res => callback(null, res),
     err => {
-      debug('wrapServerMethod: error: %s', err && err.stack || err.message || err)
+      printError('wrapServerMethod: error: %s', err)
 
       callback(wrap(err, error_props))
     }
@@ -58,8 +61,9 @@ const iterateProtos = (protos, iteratee) => {
 }
 
 class Server {
-  constructor (options) {
+  constructor (root, options) {
     this._options = options
+    this._root = path.resolve(root)
     this._server = new grpc.Server()
 
     this._init()
@@ -81,7 +85,7 @@ class Server {
 
   _getServiceMethods (package_name) {
     const p = path.join(
-      this._options.service_root,
+      this._root,
       ...packageToPaths(package_name)
     )
 
@@ -91,6 +95,8 @@ class Server {
         methods: require(p)
       }
     } catch (err) {
+      printError('getServiceMethod: error: %s', err)
+
       // TODO:better error message for different situations
       throw new Error(
         `fails to load service controller "${p}" for "${package_name}"`
@@ -195,19 +201,22 @@ class Client {
 }
 
 class Gaea {
-  constructor (root) {
-    this._options = readConfig(root)
+  constructor (options) {
+    this._options = checkConfig(options)
 
     this.client = this.client.bind(this)
+    this.server = this.server.bind(this)
   }
 
   client (host) {
     return new Client(host, this._options).create()
   }
 
-  get server () {
-    return new Server(this._options)
+  server (root) {
+    return new Server(root, this._options)
   }
 }
 
-exports.load = root => new Gaea(root)
+const gaea = options => new Gaea(options)
+
+module.exports = gaea

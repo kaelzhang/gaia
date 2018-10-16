@@ -51,9 +51,18 @@ const run = async () => {
 run()
 ```
 
-## Error handling
+# APIs
 
-config.js
+```js
+const gaea = require('gaea')
+```
+
+## gaea(options)
+
+- **options**
+  - **error_props** `Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
+  - **proto_root** `string` specifies where to load proto files.
+  - **protos** `string | Array<string>` glob pattern or glob patterns to get the proto files inside `proto_root`. Defaults to `['*.proto']`
 
 ```js
 module.exports = {
@@ -65,7 +74,9 @@ module.exports = {
 
 Then if the server throws an `error`, gaea will collect `error.code`, `error.message` and `error.stack`, and send them to its clients, while other properties will be omitted.
 
-`error_props` defaults to `['code', 'message']`
+### .client(host)
+
+### .server(controller_root).listen(port)
 
 ## License
 
