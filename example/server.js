@@ -1,5 +1,8 @@
 // Sample server
 
-const {server} = require('./hello')
+const path = require('path')
+const {server} = require('.')
 
-server.listen(50051)
+const service_root = path.join(__dirname, 'service')
+
+server(service_root).listen(50051)

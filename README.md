@@ -57,26 +57,77 @@ run()
 const gaea = require('gaea')
 ```
 
+To make better understanding the usage of `gaea`, the example below will based on the demo in the [`example`](https://github.com/kaelzhang/gaea/tree/master/example) directory.
+
+```sh
+cd example
+```
+
 ## gaea(options)
 
 - **options**
   - **error_props** `Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
   - **proto_root** `string` specifies where to load proto files.
-  - **protos** `string | Array<string>` glob pattern or glob patterns to get the proto files inside `proto_root`. Defaults to `['*.proto']`
+  - **protos** `?Array<string>` Proto filenames inside `proto_root`. If not specified, gaea will use all `.proto` files inside `proto_root`.
 
 ```js
-module.exports = {
-  ...
+const g = gaea({
+  // if the server throws an `error`, gaea will collect
+  // - `error.code`,
+  // - `error.message`
+  // - `error.stack`,
+  // and send them to its clients, while other properties will be omitted.
   error_props: ['code', 'message', 'stack'],
-  protos: ['helloworld.proto']
-}
+  proto_root: '/path/to/example/proto'
+
+  // and read all .proto files
+})
 ```
 
-Then if the server throws an `error`, gaea will collect `error.code`, `error.message` and `error.stack`, and send them to its clients, while other properties will be omitted.
+### .server(service_root).listen(port)
+
+- **service_root** `string` the directory where `gaea` will search service controllers.
+- **port** `number` the port which gRPC server will listen to.
+
+Creates and start the gaea server.
+
+```js
+const {server} = g
+
+server('/path/to/example/service').listen(50051)
+```
+
+If we have a `foo` package in a proto file, and inside the `foo` package there is a `Bar` service, then we must put a `foo/Bar.js` file in `/path/to/example/service/`.
+
+And if there is a `Baz` rpc method in the `Bar` service, we must set a `Baz` function as one of the exports of the `foo/Bar.js`. The `Baz` function might have one argument(or no arguments) which accepts the data from the client.
+
+Or there will be errors.
+
+Besides, if there is a `Quux` service which not in any package, we should just put a `Quux.js` file in `/path/to/example/service/`.
 
 ### .client(host)
 
-### .server(controller_root).listen(port)
+- **host** `string` the host string which obeys the `<hostname>:<port>` pattern.
+
+Create the gaea(gRPC) client to connect to the server.
+
+```js
+const {client} = g
+const {
+  helloworld: {Greeter}
+} = client('localhost:50051')
+
+const run = async () => {
+  try {
+    const {message} = await Greeter.sayHello({name: 'world'})
+    console.log('Greeting:', message)
+  } catch (err) {
+    console.log('error', err.code, err.message, err.stack)
+  }
+}
+
+run()
+```
 
 ## License
 
