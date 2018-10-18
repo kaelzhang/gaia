@@ -66,7 +66,7 @@ cd example
 ## gaea(options)
 
 - **options**
-  - **error_props** `Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
+  - **error_props** `?Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
   - **proto_root** `string` specifies where to load proto files.
   - **protos** `?Array<string>` Proto filenames inside `proto_root`. If not specified, gaea will use all `.proto` files inside `proto_root`.
 
