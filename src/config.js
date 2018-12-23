@@ -13,9 +13,12 @@ const DEFAULT_LOADER_OPTIONS = {
   oneofs: true
 }
 
-const load = proto_path => {
+const load = (proto_path, root) => {
   try {
-    return protoLoader.loadSync(proto_path, DEFAULT_LOADER_OPTIONS)
+    return protoLoader.loadSync(proto_path, {
+      ...DEFAULT_LOADER_OPTIONS,
+      includeDirs: [root]
+    })
   } catch (err) {
     throw new Error(`fails to load proto file "${proto_path}": ${err.message}`)
   }
@@ -55,11 +58,13 @@ const Config = shape({
           throw new TypeError(`config.protos[${i}] must be a string`)
         }
 
-        const resolved = path.resolve(this.parent.proto_root, p)
+        const {proto_root} = this.parent
+
+        const resolved = path.resolve(proto_root, p)
 
         return {
           path: resolved,
-          def: load(resolved)
+          def: load(p, proto_root)
         }
       })
     }

@@ -1,6 +1,6 @@
 {
   "name": "gaea",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "codecov": "^3.1.0",
-    "eslint": "^5.7.0",
+    "eslint": "^5.11.0",
     "eslint-config-ostai": "^1.4.0",
     "eslint-plugin-import": "^2.14.0",
     "piapia": "^1.1.0"
@@ -48,7 +48,7 @@
     "@grpc/proto-loader": "^0.3.0",
     "core-util-is": "^1.0.2",
     "glob": "^7.1.3",
-    "grpc": "^1.15.1",
+    "grpc": "^1.17.0",
     "lodash.foreach": "^4.5.0",
     "make-array": "^1.0.5",
     "object-access": "^2.0.4",
