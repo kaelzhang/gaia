@@ -17,7 +17,7 @@ const set = (metadata, key, value) => {
   metadata.set(key, JSON.stringify(value))
 }
 
-exports.wrap = (err, props) => {
+const wrap = (err, props) => {
   const metadata = new grpc.Metadata()
   set(metadata, KEY_GAEA, true)
 
@@ -36,7 +36,7 @@ exports.wrap = (err, props) => {
   }
 }
 
-exports.unwrap = (err, props) => {
+const unwrap = (err, props) => {
   const metadata = err[KEY_METADATA]
   if (!metadata) {
     return err
@@ -59,4 +59,9 @@ exports.unwrap = (err, props) => {
   })
 
   return wrapped
+}
+
+module.exports = {
+  wrap,
+  unwrap
 }

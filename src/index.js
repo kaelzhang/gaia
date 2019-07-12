@@ -3,7 +3,6 @@ const path = require('path')
 const access = require('object-access')
 const debug = require('util').debuglog('gaea')
 const {isNumber} = require('core-util-is')
-const forEach = require('lodash.foreach')
 
 const checkConfig = require('./config')
 const {wrap, unwrap} = require('./error')
@@ -42,12 +41,12 @@ const iterateProtos = (protos, iteratee) => {
   }) => {
     const grpc_object = grpc.loadPackageDefinition(def)
 
-    forEach(def, (
-      // Greeter methods
-      service_def,
+    for (const [
       // 'helloworld.Greeter'
-      package_name
-    ) => {
+      package_name,
+      // Greeter methods
+      service_def
+    ] of Object.entries(def)) {
       const service = access(grpc_object, package_name)
       const methods = serviceMethodNames(service_def)
 
@@ -56,7 +55,7 @@ const iterateProtos = (protos, iteratee) => {
         package_name,
         methods
       })
-    })
+    }
   })
 }
 
