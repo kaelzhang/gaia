@@ -1,4 +1,4 @@
-const {test} = require('piapia')
+const test = require('ava')
 const path = require('path')
 
 const fixture = (...sub) => path.join(__dirname, 'fixtures', ...sub)
