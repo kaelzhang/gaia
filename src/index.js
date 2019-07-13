@@ -8,6 +8,7 @@ const checkConfig = require('./config')
 const {wrap, unwrap} = require('./error')
 
 const STR_DOT = '.'
+
 const packageToPaths = pkg => pkg.split(STR_DOT)
 const serviceMethodNames = service_def =>
   Object.keys(service_def)
@@ -47,6 +48,8 @@ const iterateProtos = (protos, iteratee) => {
       // Greeter methods
       service_def
     ] of Object.entries(def)) {
+      // If has service_def.format,
+      // then the object is a protobuf Message, but not a Service
       if (service_def.format) {
         continue
       }
