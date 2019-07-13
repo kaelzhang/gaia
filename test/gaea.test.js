@@ -30,7 +30,7 @@ test.after(() => {
   })
 })
 
-test.only('sayHello', async t => {
+test('sayHello', async t => {
   const obj = Object.create(null)
 
   Object.defineProperty(obj, 'name', {

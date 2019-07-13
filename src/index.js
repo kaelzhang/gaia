@@ -47,6 +47,10 @@ const iterateProtos = (protos, iteratee) => {
       // Greeter methods
       service_def
     ] of Object.entries(def)) {
+      if (service_def.format) {
+        continue
+      }
+
       const service = access(grpc_object, package_name)
       const methods = serviceMethodNames(service_def)
 
