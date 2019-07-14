@@ -17,13 +17,15 @@
 
 The manager to wrap [grpc](https://grpc.io) services and hold .proto files.
 
-- **Handle Custom Errors** `grpc` does NOT provide an formal way to handle errors, even lack of documentation, while `gaea` will do it for you.
-- **Manage .proto files** `gaea` allows us to share proto files between server and clients.
+- **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaea` will do it for you.
+- **Manage .proto files** `gaea` allows us to share proto files between server and clients. `gaea` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
+- **Eggjs compatible plugins** `gaea` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
+- **Restful API service made easy** `gaea` provides a convenient way to define restful API routings upon the existing gRPC services.
 
 ## Install
 
 ```sh
-$ npm install gaea
+$ npm i gaea
 ```
 
 ## Usage

@@ -1,6 +1,7 @@
 const ENV_KEY = '__gaea_boooom'
 
 if (ENV_KEY in process.env) {
+  // Should not load twice
   throw new Error('booooom !!!!')
 }
 

@@ -6,7 +6,7 @@ module.exports = {
   },
 
   throwsNoCode () {
-    /* eslint no-throw-literal: "off" */
+    // eslint-disable-next-line no-throw-literal
     throw {
       message: 'custom error without code'
     }
