@@ -5,7 +5,7 @@ const debug = require('util').debuglog('gaea')
 const {isNumber} = require('core-util-is')
 
 const checkConfig = require('./config')
-const {wrap, unwrap} = require('./error')
+const {wrap, unwrap} = require('./error-wrapping')
 
 const STR_DOT = '.'
 

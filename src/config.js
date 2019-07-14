@@ -1,5 +1,5 @@
 const {shape} = require('skema')
-const path = require('path')
+const {resolve} = require('path')
 const {isArray, isString} = require('core-util-is')
 const glob = require('glob')
 const protoLoader = require('@grpc/proto-loader')
@@ -27,9 +27,7 @@ const load = (proto_path, root) => {
 const Config = shape({
   proto_root: {
     validate: isString,
-    set (p) {
-      return path.resolve(p)
-    }
+    set: p => resolve(p)
   },
   error_props: {
     default: ['code', 'message'],
@@ -60,7 +58,7 @@ const Config = shape({
 
         const {proto_root} = this.parent
 
-        const resolved = path.resolve(proto_root, p)
+        const resolved = resolve(proto_root, p)
 
         return {
           path: resolved,

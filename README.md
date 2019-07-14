@@ -30,19 +30,28 @@ $ npm i gaea
 
 ## Usage
 
+```js
+const {
+  Server, Client
+} = require('gaea')
+
+const root = path.join(__dirname, 'example')
+```
+
+To make better understanding the usage of `gaea`, the example below will based on the demo in the [`example`](https://github.com/kaelzhang/gaea/tree/master/example) directory.
+
 Start server:
 
 ```js
-const {server} = require('./example/hello')
-server.listen(50051)
+new Server(root).listen(50051)
 ```
 
 Run client:
 
 ```js
 const {
-  helloworld: {Greeter}
-} = require('./example/hello').client('localhost:50051')
+  Greeter
+} = new Client(root).connect('localhost:50051')
 
 const run = async () => {
   const {message} = await Greeter.sayHello({name: 'world'})
@@ -55,17 +64,7 @@ run()
 
 # APIs
 
-```js
-const gaea = require('gaea')
-```
-
-To make better understanding the usage of `gaea`, the example below will based on the demo in the [`example`](https://github.com/kaelzhang/gaea/tree/master/example) directory.
-
-```sh
-cd example
-```
-
-## gaea(options)
+## Server(root, config)
 
 - **options**
   - **error_props** `?Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
