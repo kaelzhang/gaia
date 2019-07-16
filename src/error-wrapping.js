@@ -1,8 +1,11 @@
 const grpc = require('grpc')
 const {isString} = require('core-util-is')
 
-const KEY_GAEA = 'is_node_gaea'
-const KEY_METADATA = 'metadata'
+const KEY_GAEA = '__gaea:is_node_gaea'
+const KEY_METADATA = '__gaea:metadata'
+
+// Ref
+// https://www.grpc.io/docs/guides/error/
 
 const get = (metadata, key) => {
   const [ret] = metadata.get(key)

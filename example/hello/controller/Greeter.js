@@ -1,9 +1,3 @@
-module.exports = {
-  sayHello ({
-    name
-  }) {
-    return {
-      message: `Hello ${name}`
-    }
-  }
-}
+exports.sayHello = ({name}) => ({
+  message: `Hello ${name}`
+})
