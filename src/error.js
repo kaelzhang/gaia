@@ -18,16 +18,18 @@ E('EMPTY_ERROR_PROPS', 'config.error_props must not be an empty array')
 
 const OR_PATH = ', or service.path should be specified'
 
-E('PACKAGE_JSON_NOT_FOUND',
-  `package.json is not found in package "%s${OR_PATH}`)
+E('PACKAGE_NOT_FOUND', 'package "%s" not found')
 
 E('SERVICE_PATH_NOT_DIR', 'service path not found or not a directory')
+E('PLUGIN_PATH_NOT_DIR', 'plugin path not found or not a directory')
 
 E('PACKAGE_OR_PATH_REQUIRED',
-  'either service.package or service.path should be speicified')
+  'either %s.package or %s.path should be speicified')
 
 E('NO_PACKAGE_GAEA_PATH',
   `package.json contains no gaea.path in package "%s"${OR_PATH}`)
+
+E('FAILS_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
 
 module.exports = {
   error

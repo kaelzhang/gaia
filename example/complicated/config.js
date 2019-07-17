@@ -7,21 +7,22 @@ module.exports = {
     'helloworld.proto',
     'helloworld2.proto'
   ],
-  plugins: [
-    {
-      // defaults to true
-      enable: true,
-      config: {
+  // plugins: [
+  //   {
+  //     // defaults to true
+  //     enable: true,
+  //     config: {
 
-      },
-      package: 'egg-mysql',
-      // path: require.resolve('egg-mysql')
-    }
-  ],
-  services: {
-    payment: {
-      package: '@ostai/payment-service',
-      // path: require.resolve('@ostai/payment-service')
-    }
-  }
+  //     },
+  //     package: 'egg-mysql',
+  //     // path: require.resolve('egg-mysql')
+  //   }
+  // ],
+  // // gaea services
+  // services: {
+  //   payment: {
+  //     package: '@ostai/payment-service',
+  //     // path: require.resolve('@ostai/payment-service')
+  //   }
+  // }
 }

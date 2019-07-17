@@ -1,15 +1,16 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const {
   shape,
   arrayOf,
   objectOf
 } = require('skema')
-const {resolve} = require('path')
+const {resolve, dirname, join} = require('path')
 const {isArray, isString} = require('core-util-is')
 const access = require('object-access')
 const glob = require('glob')
 const protoLoader = require('@grpc/proto-loader')
 const makeArray = require('make-array')
+const resolveFrom = require('resolve-from')
 
 const {error} = require('./error')
 
@@ -28,11 +29,11 @@ const load = (proto_path, root) => {
       includeDirs: [root]
     })
   } catch (err) {
-    throw new Error(`fails to load proto file "${proto_path}": ${err.message}`)
+    throw error('FAILS_LOAD_PROTO', proto_path, err.stack)
   }
 }
 
-const isArrayString = array => !isArray(array) && array.every(isString)
+const isArrayString = array => isArray(array) && array.every(isString)
 
 const isDirectory = dir = () => {
   let stat
@@ -53,8 +54,7 @@ const COMMON_SHAPE = {
         throw error('INVALID_PROTO_ROOT', proto_root)
       }
     },
-    default () {
-      const {root} = this.parent
+    default ([root]) {
       return resolve(root, 'proto')
     },
     set (proto_root) {
@@ -103,6 +103,29 @@ const COMMON_SHAPE = {
   }
 }
 
+const resolvePackage = (from, package_name) => {
+  try {
+    const pkgFile = resolveFrom(from, `${package_name}/package.json`)
+    return dirname(pkgFile)
+  } catch (err) {
+    if (err.ENOENT) {
+      throw error('PACKAGE_NOT_FOUND', package_name)
+    }
+
+    throw err
+  }
+}
+
+const ensurePath = errorCode => path => {
+  const resolved = resolve(path)
+
+  if (!isDirectory(resolved)) {
+    throw error(errorCode, path)
+  }
+
+  return resolved
+}
+
 const Plugin = shape({
   enable: {
     type: 'boolean',
@@ -116,82 +139,87 @@ const Plugin = shape({
     }
   },
 
-  path: () {
-
+  path: {
+    optional: true,
+    set: ensurePath('PLUGIN_PATH_NOT_DIR')
   },
 
   package: {
+    when () {
+      return !this.parent.path
+    },
+    default () {
+      return
+    },
     set (package_name) {
+      if (!package_name) {
+        throw error('PACKAGE_OR_PATH_REQUIRED', 'plugin')
+      }
 
+      return resolvePackage(root, package_name)
     }
   }
 })
 
-const Services = objectOf(shape({
+const Plugins = arrayOf(Plugin)
+
+const Service = shape({
   path: {
     optional: true,
-    validate (package_path) {
-      const resolved = resolve(package_path)
-
-      if (!isDirectory(resolved)) {
-        throw error('SERVICE_PATH_NOT_DIR', package_path)
-      }
-
-      return true
-    }
+    set: ensurePath('SERVICE_PATH_NOT_DIR')
   },
 
   package: {
-    default () {
-      return undefined
+    // We don't actually use service.package
+    enumerable: false,
+    when () {
+      return !this.parent.path
     },
-    validate (package_name) {
-      const package_path = this.parent.path
-      if (package_path) {
-        return undefined
-      }
-
+    default () {
+      return
+    },
+    set (package_name, [root]) {
       if (!package_name) {
-        throw error('PACKAGE_OR_PATH_REQUIRED')
+        throw error('PACKAGE_OR_PATH_REQUIRED', 'service')
       }
 
-      let pkg
-
-      try {
-        pkg = require(`${package_name}/package.json`)
-      } catch (err) {
-        if (err.ENOENT) {
-          throw error('PACKAGE_JSON_NOT_FOUND', package_name)
-        }
-      }
+      const pkgRoot = resolvePackage(root, package_name)
+      const pkg = fs.readJsonSync(join(pkgRoot, 'package.json'))
 
       const path = access(pkg, 'gaea.path')
-      if (!path) {
-        throw error('NO_PACKAGE_GAEA_PATH')
-      }
 
-      return path
+      this.parent.path = path
+        ? resolve(path)
+        : pkgRoot
     }
   }
-}))
+})
+
+const Services = objectOf(Service)
 
 const SERVER_SHAPE = {
   ...COMMON_SHAPE,
 
-  plugins: arrayOf(),
-  services: Services
+  plugins: {
+    type: Plugins,
+    default: () => []
+  },
+  services: {
+    type: Services,
+    default: () => ({})
+  }
 }
 
 const ServerConfig = shape(COMMON_SHAPE)
 const ClientConfig = shape(SERVER_SHAPE)
 
 module.exports = {
-  serverConfig (config) {
-    return ServerConfig.from(config)
+  serverConfig (config, root) {
+    return ServerConfig.from(config, [root])
   },
 
-  clientConfig (config) {
-    return ClientConfig.from(config)
+  clientConfig (config, root) {
+    return ClientConfig.from(config, [root])
   },
 
   root (root) {

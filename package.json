@@ -55,10 +55,12 @@
     "@grpc/proto-loader": "^0.5.1",
     "core-util-is": "^1.0.2",
     "err-object": "^5.1.2",
+    "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
     "grpc": "^1.22.2",
     "make-array": "^1.0.5",
     "object-access": "^2.0.4",
-    "skema": "^9.4.1"
+    "resolve-from": "^5.0.0",
+    "skema": "^9.4.2"
   }
 }
