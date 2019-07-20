@@ -1,0 +1,9 @@
+class Application {
+  constructor () {
+
+  }
+
+  addSingleton () {
+
+  }
+}

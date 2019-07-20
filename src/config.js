@@ -35,7 +35,7 @@ const load = (proto_path, root) => {
 
 const isArrayString = array => isArray(array) && array.every(isString)
 
-const isDirectory = dir = () => {
+const isDirectory = dir => {
   let stat
 
   try {
@@ -54,7 +54,7 @@ const COMMON_SHAPE = {
         throw error('INVALID_PROTO_ROOT', proto_root)
       }
     },
-    default ([root]) {
+    default (root) {
       return resolve(root, 'proto')
     },
     set (proto_root) {
@@ -148,15 +148,13 @@ const Plugin = shape({
     when () {
       return !this.parent.path
     },
-    default () {
-      return
-    },
-    set (package_name) {
+    default () {},
+    set (package_name, root) {
       if (!package_name) {
         throw error('PACKAGE_OR_PATH_REQUIRED', 'plugin')
       }
 
-      return resolvePackage(root, package_name)
+      this.parent.path = resolvePackage(root, package_name)
     }
   }
 })
@@ -164,6 +162,7 @@ const Plugin = shape({
 const Plugins = arrayOf(Plugin)
 
 const Service = shape({
+  // The path contains gaea service code
   path: {
     optional: true,
     set: ensurePath('SERVICE_PATH_NOT_DIR')
@@ -175,10 +174,8 @@ const Service = shape({
     when () {
       return !this.parent.path
     },
-    default () {
-      return
-    },
-    set (package_name, [root]) {
+    default () {},
+    set (package_name, root) {
       if (!package_name) {
         throw error('PACKAGE_OR_PATH_REQUIRED', 'service')
       }
@@ -210,8 +207,8 @@ const SERVER_SHAPE = {
   }
 }
 
-const ServerConfig = shape(COMMON_SHAPE)
-const ClientConfig = shape(SERVER_SHAPE)
+const ServerConfig = shape(SERVER_SHAPE)
+const ClientConfig = shape(COMMON_SHAPE)
 
 module.exports = {
   serverConfig (config, root) {

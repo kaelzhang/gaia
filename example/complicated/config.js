@@ -7,17 +7,17 @@ module.exports = {
     'helloworld.proto',
     'helloworld2.proto'
   ],
-  // plugins: [
-  //   {
-  //     // defaults to true
-  //     enable: true,
-  //     config: {
+  plugins: [
+    {
+      // defaults to true
+      enable: true,
+      config: {
 
-  //     },
-  //     package: 'egg-mysql',
-  //     // path: require.resolve('egg-mysql')
-  //   }
-  // ],
+      },
+      package: 'egg-mysql',
+      // path: require.resolve('egg-mysql')
+    }
+  ],
   // // gaea services
   // services: {
   //   payment: {
