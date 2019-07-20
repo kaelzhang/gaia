@@ -211,11 +211,11 @@ const ServerConfig = shape(SERVER_SHAPE)
 const ClientConfig = shape(COMMON_SHAPE)
 
 module.exports = {
-  serverConfig (config, root) {
+  server (config, root) {
     return ServerConfig.from(config, [root])
   },
 
-  clientConfig (config, root) {
+  client (config, root) {
     return ClientConfig.from(config, [root])
   },
 
