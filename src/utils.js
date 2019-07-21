@@ -8,7 +8,21 @@ const define = (host, key, value, writable = false) =>
     writable
   })
 
+const defineGetter = (host, key, get) =>
+  Object.defineProperty(host, key, {get})
+
+const requireModule = path => {
+  // TODO
+  // support typescript
+  // support esmodule
+
+  const exports = require(path)
+  return exports
+}
+
 module.exports = {
   symbol,
-  define
+  define,
+  defineGetter,
+  requireModule
 }
