@@ -4,14 +4,13 @@ const {
   defineGetter,
   requireModule
 } = require('./utils')
-const {error} = require('./error')
+const initSingleton = require('./singleton')
 
 const LOAD_METHODS = symbol('load-methods')
 const WRAP_METHOD = symbol('wrap-method')
 // const APP = symbol('app')
 const PATH = symbol('path')
 const CONFIG = symbol('config')
-const OPTIONS = symbol('options')
 const CONTEXT = symbol('context')
 const IS_LOADED = symbol('is-loaded')
 
@@ -46,25 +45,6 @@ class ContextApplication {
 
 }
 
-const initSingleton = ({
-  create,
-  name,
-  config,
-  app
-}) => {
-  const {
-    client,
-    clients
-  } = config
-
-  if (client && clients) {
-    throw error('CLIENT_CONFLICT', name)
-  }
-
-  if (client) {
-  }
-}
-
 class Application {
   constructor () {
     define(this, CONTEXT, {
@@ -75,11 +55,11 @@ class Application {
   }
 
   addSingleton (name, create) {
-    initSingleton({
+    this[CONTEXT].app[name] = initSingleton({
       create,
       name,
       config: this[CONFIG],
-      app: this[CONTEXT].app
+      app: this
     })
 
     delete this[CONFIG]
