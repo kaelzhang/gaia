@@ -26,7 +26,7 @@ const {
 const root = path.join(__dirname, 'example')
 ```
 
-To make better understanding the usage of `gaea`, the example below will based on the demo in the [`example`](https://github.com/kaelzhang/gaea/tree/master/example) directory.
+To make better understanding the usage of `gaea`, the example below is based on the demo in the [`example/hello`](https://github.com/kaelzhang/gaea/tree/master/example/hello) directory.
 
 Start server:
 
@@ -44,20 +44,46 @@ const {
 const run = async () => {
   const {message} = await Greeter.sayHello({name: 'world'})
 
-  console.log('Greeting:', message)
+  console.log(message)
 }
 
 run()
+// Hello world
 ```
 
 # APIs
 
 ## Server(root, config)
 
-- **options**
+- **root** `path` the root path to load the server from
+- **config** `object`
   - **error_props** `?Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
   - **proto_root** `string` specifies where to load proto files.
   - **protos** `?Array<string>` Proto filenames inside `proto_root`. If not specified, gaea will use all `.proto` files inside `proto_root`.
+  - **plugins** `Array<Plugin>`
+  - **services** `Services`
+
+```ts
+interface Package {
+  // The root path of the package
+  path?: string
+  // The package name of the package
+  package?: string
+
+  // Either path or package should be defined.
+}
+
+interface Plugin extends Package {
+  enable: boolean
+  // Configurations for the plugin
+  config: object
+}
+
+interface Services {
+  [name: string]: Package
+}
+
+```
 
 ```js
 const g = gaea({

@@ -186,7 +186,7 @@ const Service = shape({
       const path = access(pkg, 'gaea.path')
 
       this.parent.path = path
-        ? resolve(path)
+        ? resolve(pkgRoot, path)
         : pkgRoot
     }
   }

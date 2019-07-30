@@ -15,12 +15,15 @@ const CONTEXT = symbol('context')
 const IS_LOADED = symbol('is-loaded')
 
 class Controller {
+  // - context: this object for the Controller
+  // - path; the filepath of the controller
   constructor (context, path) {
     define(this, CONTEXT, context)
     define(this, PATH, path)
     define(this, IS_LOADED, false, true)
   }
 
+  // Load
   [LOAD_METHODS] () {
     if (this[IS_LOADED]) {
       return
@@ -45,6 +48,7 @@ class ContextApplication {
 
 }
 
+// The one which will be passed into the factory of a plugin
 class Application {
   constructor () {
     define(this, CONTEXT, {
