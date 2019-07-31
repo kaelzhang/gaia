@@ -4,6 +4,7 @@ const {
   loadPackageDefinition
 } = require('grpc')
 
+const config = require('./config')
 const {unwrap} = require('./error-wrapping')
 
 const serviceMethodNames = service_def =>
@@ -73,16 +74,15 @@ const wrapClientMethods = (real_client, methods, error_props) => {
 }
 
 class Client {
-  constructor (host, options) {
-    this._host = host
-    this._options = options
+  constructor (root, rawConfig = {}) {
+    this._config = config.client(rawConfig, config.root(root))
   }
 
-  create () {
+  connect (host) {
     const {
       protos,
       error_props
-    } = this._options
+    } = this._config
 
     const clients = {}
 
@@ -91,7 +91,7 @@ class Client {
       package_name,
       methods
     }) => {
-      const client = new Service(this._host, credentials.createInsecure())
+      const client = new Service(host, credentials.createInsecure())
 
       access.set(
         clients, package_name,

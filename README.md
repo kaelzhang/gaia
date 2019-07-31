@@ -53,7 +53,7 @@ run()
 
 # APIs
 
-## Server(root, config)
+## new Server(root, config)
 
 - **root** `path` the root path to load the server from
 - **config** `object`
@@ -99,26 +99,11 @@ const g = gaea({
 })
 ```
 
-### .server(service_root).listen(port)
+### server.listen(port)
 
-- **service_root** `string` the directory where `gaea` will search service controllers.
 - **port** `number` the port which gRPC server will listen to.
 
-Creates and start the gaea server.
-
-```js
-const {server} = g
-
-server('/path/to/example/service').listen(50051)
-```
-
-If we have a `foo` package in a proto file, and inside the `foo` package there is a `Bar` service, then we must put a `foo/Bar.js` file in `/path/to/example/service/`.
-
-And if there is a `Baz` rpc method in the `Bar` service, we must set a `Baz` function as one of the exports of the `foo/Bar.js`. The `Baz` function might have one argument(or no arguments) which accepts the data from the client.
-
-Or there will be errors.
-
-Besides, if there is a `Quux` service which not in any package, we should just put a `Quux.js` file in `/path/to/example/service/`.
+Start the gaea server.
 
 ### .client(host)
 
@@ -147,3 +132,12 @@ run()
 ## License
 
 MIT
+
+
+If we have a `foo` package in a proto file, and inside the `foo` package there is a `Bar` service, then we must put a `foo/Bar.js` file in `/path/to/example/service/`.
+
+And if there is a `Baz` rpc method in the `Bar` service, we must set a `Baz` function as one of the exports of the `foo/Bar.js`. The `Baz` function might have one argument(or no arguments) which accepts the data from the client.
+
+Or there will be errors.
+
+Besides, if there is a `Quux` service which not in any package, we should just put a `Quux.js` file in `/path/to/example/service/`.
