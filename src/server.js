@@ -1,5 +1,3 @@
-const path = require('path')
-
 const grpc = require('grpc')
 const {isNumber} = require('core-util-is')
 

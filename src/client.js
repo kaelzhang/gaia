@@ -47,13 +47,13 @@ class Client {
     iterateProtos(protos, ({
       service: Service,
       package_name,
-      methods
+      method_names
     }) => {
       const client = new Service(host, credentials.createInsecure())
 
       set(
         clients, package_name,
-        wrapClientMethods(client, methods, error_props)
+        wrapClientMethods(client, method_names, error_props)
       )
     })
 
@@ -62,6 +62,5 @@ class Client {
 }
 
 module.exports = {
-  Client,
-  iterateProtos
+  Client
 }

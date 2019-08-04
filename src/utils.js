@@ -52,12 +52,12 @@ const iterateProtos = (protos, iteratee) => {
       }
 
       const service = access(grpc_object, package_name)
-      const methods = serviceMethodNames(service_def)
+      const method_names = serviceMethodNames(service_def)
 
       iteratee({
         service,
         package_name,
-        methods
+        method_names
       })
     }
   })

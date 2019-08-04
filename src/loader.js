@@ -1,24 +1,31 @@
 const {join} = require('path')
-const {wrap} = require('./error-wrapping')
+const {set} = require('object-access')
 
+const {Client} = require('./client')
+const {wrap} = require('./error-wrapping')
 const {
   iterateProtos,
-  requireModule
+  requireModule,
+  define
 } = require('./utils')
-const {CONFIG} = require('./constants')
+const {
+  CONFIG, CONTEXT
+} = require('./constants')
+const {error} = require('./error')
 
 const STR_DOT = '.'
 
 const packageToPaths = pkg => pkg.split(STR_DOT)
 
-const wrapServerMethod = (method, error_props) => (call, callback) => {
-  Promise.resolve()
-  .then(() => method(call.request, call))
-  .then(
-    res => callback(null, res),
-    err => callback(wrap(err, error_props))
-  )
-}
+const wrapServerMethod = (method, error_props, context) =>
+  (call, callback) => {
+    Promise.resolve()
+    .then(() => method.call(context, call.request, call))
+    .then(
+      res => callback(null, res),
+      err => callback(wrap(err, error_props))
+    )
+  }
 
 class Loader {
   constructor ({
@@ -28,6 +35,7 @@ class Loader {
     server
   }) {
     this._app = app
+    this._context = this._app[CONTEXT]
     this._root = root
     this._config = config
     this._server = server
@@ -35,7 +43,8 @@ class Loader {
 
   load () {
     this.loadPlugins()
-    this.loadController()
+    this.loadServices()
+    this.loadControllers()
   }
 
   loadPlugins () {
@@ -57,8 +66,8 @@ class Loader {
 
       try {
         create = requireModule(entry)
-      } catch (error) {
-        throw error('ERR_LOAD_PLUGIN')
+      } catch (err) {
+        throw error('ERR_LOAD_PLUGIN', err.stack)
       }
 
       create(this._app)
@@ -67,7 +76,7 @@ class Loader {
     })
   }
 
-  _getServiceMethods (package_name) {
+  _getServiceControllerMethods (package_name) {
     const p = join(
       this._root,
       ...packageToPaths(package_name)
@@ -79,46 +88,58 @@ class Loader {
         methods: require(p)
       }
     } catch (err) {
-      // TODO:better error message for different situations
-      throw new Error(
-        `fails to load service controller "${p}" for "${package_name}"`
-      )
+      throw error('ERR_LOAD_CONTROLLER', p, package_name, err.stack)
     }
   }
 
-  _addService (service, package_name, required_methods) {
+  _addController (service, package_name, method_names) {
     const {
       service_path,
       methods
-    } = this._getServiceMethods(package_name)
+    } = this._getServiceControllerMethods(package_name)
 
-    const {error_props} = this._options
+    const {error_props} = this._config
 
     const wrapped = {}
 
-    required_methods.forEach(({name, originalName}) => {
+    method_names.forEach(({name, originalName}) => {
       const method = methods[name] || methods[originalName]
 
       if (!method) {
-        throw new Error(`method "${name}" is required in "${service_path}"`)
+        throw error('RPC_METHOD_NOT_FOUND', name, service_path)
       }
 
-      wrapped[name] = wrapServerMethod(method, error_props)
+      wrapped[name] = wrapServerMethod(
+        method, error_props, this._context)
     })
 
+    set(this._context.controller, package_name, wrapped)
     this._server.addService(service, wrapped)
   }
 
-  loadController () {
+  loadControllers () {
     const {protos} = this._config
 
     iterateProtos(protos, ({
       service,
       package_name,
-      methods
+      method_names
     }) => {
-      this._addService(service.service, package_name, methods)
+      this._addController(service.service, package_name, method_names)
     })
+  }
+
+  loadServices () {
+    const {services} = this._config
+    const context_services = this._context.service
+
+    for (const [name, {
+      host,
+      path
+    }] of Object.entries(services)) {
+      define(context_services, name,
+        new Client(path).connect(host))
+    }
   }
 }
 

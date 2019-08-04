@@ -170,6 +170,10 @@ const Service = shape({
     set: ensurePath('SERVICE_PATH_NOT_DIR')
   },
 
+  host: {
+    type: String
+  },
+
   package: {
     // We don't actually use service.package
     enumerable: false,

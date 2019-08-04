@@ -35,6 +35,12 @@ E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
 
 E('ERR_LOAD_PLUGIN', 'fails to load plugin, reason: %s')
 
+E('ERR_LOAD_CONTROLLER',
+  'fails to load service controller "%s" for "%s", reason: %s')
+
+E('RPC_METHOD_NOT_FOUND',
+  'rpc method "%s" is required in "%s"')
+
 module.exports = {
   error
 }

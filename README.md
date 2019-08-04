@@ -110,8 +110,13 @@ interface Plugin extends Package {
   config: object
 }
 
+interface Service extends Package {
+  // the host param of `client.connect(host)`
+  host: string
+}
+
 interface Services {
-  [name: string]: Package
+  [name: string]: Service
 }
 
 ```
