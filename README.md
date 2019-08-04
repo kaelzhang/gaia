@@ -53,17 +53,47 @@ run()
 
 # APIs
 
-## new Server(root, config)
+## new Client(root, clientConfig?)
 
-- **root** `path` the root path to load the server from
-- **config** `object`
-  - **error_props** `?Array<string>` tells `gaea` which properties of error should be collected, serialized and transmitted to the clients. `error_props` defaults to `['code', 'message']`.
-  - **proto_root** `string` specifies where to load proto files.
-  - **protos** `?Array<string>` Proto filenames inside `proto_root`. If not specified, gaea will use all `.proto` files inside `proto_root`.
-  - **plugins** `Array<Plugin>`
-  - **services** `Services`
+Creates the gaea client.
+
+- **root** `path` the root path to load the client from
+- **clientConfig?** `BaseConfig` client configuration. If not specified, `gaea` will load configuration from `${root}/config.js`
 
 ```ts
+interface BaseConfig {
+  // Tells `gaea` which properties of error should be
+  // - collected, serialized and transmitted to the clients.
+  // - or deseriialized from server
+  // `error_props` defaults to `['code', 'message']`
+  error_props: Array<string>
+  // specifies where to load proto files.
+  proto_root: string
+  // Proto filenames inside `proto_root`.
+  // If not specified, gaea will use all `.proto` files inside `proto_root`.
+  protos?: Array<string>
+}
+```
+
+### client.connect(host):
+
+Connects to the gRPC server and returns the service methods
+
+- **host** `string` the server host to connect to which includes the server hostname and port and whose pattern is `<hostname>:<port>`
+
+
+
+## new Server(root, serverConfig?)
+
+- **root** `path` the root path to load the server from
+- **serverConfig?** `ServerConfig` server configurations. If not specified, `gaea` will load configuration from `${root}/config.js`
+
+```ts
+interface ServerConfig extends BaseConfig {
+  plugins: Array<Plugin>
+  services: Services
+}
+
 interface Package {
   // The root path of the package
   path?: string
@@ -99,35 +129,11 @@ const g = gaea({
 })
 ```
 
-### server.listen(port)
+### server.listen(port): void
 
 - **port** `number` the port which gRPC server will listen to.
 
 Start the gaea server.
-
-### .client(host)
-
-- **host** `string` the host string which obeys the `<hostname>:<port>` pattern.
-
-Create the gaea(gRPC) client to connect to the server.
-
-```js
-const {client} = g
-const {
-  helloworld: {Greeter}
-} = client('localhost:50051')
-
-const run = async () => {
-  try {
-    const {message} = await Greeter.sayHello({name: 'world'})
-    console.log('Greeting:', message)
-  } catch (err) {
-    console.log('error', err.code, err.message, err.stack)
-  }
-}
-
-run()
-```
 
 ## License
 
