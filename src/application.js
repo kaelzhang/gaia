@@ -5,12 +5,12 @@ const {
   requireModule
 } = require('./utils')
 const initSingleton = require('./singleton')
+const {CONFIG} = require('./constants')
 
 const LOAD_METHODS = symbol('load-methods')
 const WRAP_METHOD = symbol('wrap-method')
 // const APP = symbol('app')
 const PATH = symbol('path')
-const CONFIG = symbol('config')
 const CONTEXT = symbol('context')
 const IS_LOADED = symbol('is-loaded')
 
@@ -40,21 +40,13 @@ class Controller {
   }
 }
 
-class ContextApplication {
-  constructor () {
-
-  }
-
-
-}
-
 // The one which will be passed into the factory of a plugin
 class Application {
   constructor () {
     define(this, CONTEXT, {
       controller: Object.create(null),
       service: Object.create(null),
-      app: new ContextApplication()
+      app: Object.create(null)
     })
   }
 
@@ -71,5 +63,6 @@ class Application {
 }
 
 module.exports = {
+  Controller,
   Application
 }

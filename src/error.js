@@ -12,6 +12,8 @@ E('ROOT_NOT_DIR', 'root "%s" is not a directory')
 
 TE('INVALID_PROTO_ROOT', 'config.proto_root must be a string')
 
+TE('INVALID_CONTROLLER_ROOT', 'config.controller_root must be a string')
+
 TE('INVALID_ERROR_PROPS', 'config.error_props must be an array of strings')
 
 E('EMPTY_ERROR_PROPS', 'config.error_props must not be an empty array')
@@ -29,7 +31,9 @@ E('PACKAGE_OR_PATH_REQUIRED',
 E('NO_PACKAGE_GAEA_PATH',
   `package.json contains no gaea.path in package "%s"${OR_PATH}`)
 
-E('FAILS_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
+E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
+
+E('ERR_LOAD_PLUGIN', 'fails to load plugin, reason: %s')
 
 module.exports = {
   error

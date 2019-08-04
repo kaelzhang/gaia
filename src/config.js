@@ -29,7 +29,7 @@ const load = (proto_path, root) => {
       includeDirs: [root]
     })
   } catch (err) {
-    throw error('FAILS_LOAD_PROTO', proto_path, err.stack)
+    throw error('ERR_LOAD_PROTO', proto_path, err.stack)
   }
 }
 
@@ -47,20 +47,22 @@ const isDirectory = dir => {
   return stat.isDirectory()
 }
 
-const COMMON_SHAPE = {
-  proto_root: {
-    validate (proto_root) {
-      if (!isString(proto_root)) {
-        throw error('INVALID_PROTO_ROOT', proto_root)
-      }
-    },
-    default (root) {
-      return resolve(root, 'proto')
-    },
-    set (proto_root) {
-      return resolve(this.parent.root, proto_root)
+const TypeRoot = (default_value, error_code) => ({
+  validate (value) {
+    if (!isString(value)) {
+      throw error(error_code, value)
     }
   },
+  default (root) {
+    return resolve(root, default_value)
+  },
+  set (value) {
+    return resolve(this.parent.root, value)
+  }
+})
+
+const COMMON_SHAPE = {
+  proto_root: TypeRoot('proto', 'INVALID_PROTO_ROOT'),
 
   error_props: {
     default: ['code', 'message'],
@@ -197,6 +199,7 @@ const Services = objectOf(Service)
 const SERVER_SHAPE = {
   ...COMMON_SHAPE,
 
+  controller_root: TypeRoot('controller', 'INVALID_CONTROLLER_ROOT'),
   plugins: {
     type: Plugins,
     default: () => []

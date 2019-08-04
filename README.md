@@ -16,7 +16,7 @@ The manager to wrap [grpc](https://grpc.io) services and hold .proto files.
 $ npm i gaea
 ```
 
-## Usage
+## APIs
 
 ```js
 const {
@@ -38,6 +38,7 @@ Run client:
 
 ```js
 const {
+  // service Greeter
   Greeter
 } = new Client(root).connect('localhost:50051')
 

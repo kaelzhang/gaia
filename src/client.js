@@ -1,51 +1,9 @@
-const access = require('object-access')
-const {
-  credentials,
-  loadPackageDefinition
-} = require('grpc')
+const {credentials} = require('grpc')
+const {set} = require('object-access')
 
 const config = require('./config')
+const {iterateProtos} = require('./utils')
 const {unwrap} = require('./error-wrapping')
-
-const serviceMethodNames = service_def =>
-  Object.keys(service_def)
-  .map(name => {
-    const {originalName} = service_def[name]
-    return {
-      originalName,
-      name
-    }
-  })
-
-const iterateProtos = (protos, iteratee) => {
-  protos.forEach(({
-    def
-  }) => {
-    const grpc_object = loadPackageDefinition(def)
-
-    for (const [
-      // 'helloworld.Greeter'
-      package_name,
-      // Greeter methods
-      service_def
-    ] of Object.entries(def)) {
-      // If has service_def.format,
-      // then the object is a protobuf Message, but not a Service
-      if (service_def.format) {
-        continue
-      }
-
-      const service = access(grpc_object, package_name)
-      const methods = serviceMethodNames(service_def)
-
-      iteratee({
-        service,
-        package_name,
-        methods
-      })
-    }
-  })
-}
 
 const wrapClientMethods = (real_client, methods, error_props) => {
   const client = {}
@@ -93,7 +51,7 @@ class Client {
     }) => {
       const client = new Service(host, credentials.createInsecure())
 
-      access.set(
+      set(
         clients, package_name,
         wrapClientMethods(client, methods, error_props)
       )
