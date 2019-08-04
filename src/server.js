@@ -1,9 +1,9 @@
 const path = require('path')
-const debug = require('util').debuglog('gaea')
 
 const grpc = require('grpc')
 const {isNumber} = require('core-util-is')
 
+const config = require('./config')
 const {wrap} = require('./error-wrapping')
 const {iterateProtos} = require('./client')
 
@@ -11,26 +11,18 @@ const STR_DOT = '.'
 
 const packageToPaths = pkg => pkg.split(STR_DOT)
 
-const printError = (message, err) =>
-  err && debug(message, err.stack || err.message || err)
-
 const wrapServerMethod = (method, error_props) => (call, callback) => {
   Promise.resolve()
   .then(() => method(call.request, call))
   .then(
     res => callback(null, res),
-    err => {
-      printError('wrapServerMethod: error: %s', err)
-
-      callback(wrap(err, error_props))
-    }
+    err => callback(wrap(err, error_props))
   )
 }
 
 class Server {
-  constructor (root, options) {
-    this._options = options
-    this._root = path.resolve(root)
+  constructor (root, rawConfig = {}) {
+    this._options = config.server(rawConfig, config.root(root))
     this._server = new grpc.Server()
 
     this._init()
@@ -39,7 +31,7 @@ class Server {
   _init () {
     const {
       protos
-    } = this._options
+    } = this._config
 
     iterateProtos(protos, ({
       service,
@@ -62,7 +54,6 @@ class Server {
         methods: require(p)
       }
     } catch (err) {
-      printError('getServiceMethod: error: %s', err)
 
       // TODO:better error message for different situations
       throw new Error(
