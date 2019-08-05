@@ -78,7 +78,7 @@ class Loader {
 
   _getServiceControllerMethods (package_name) {
     const p = join(
-      this._root,
+      this._config.controller_root,
       ...packageToPaths(package_name)
     )
 

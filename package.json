@@ -48,8 +48,8 @@
     "ava": "^2.2.0",
     "codecov": "^3.5.0",
     "egg-mysql": "^3.0.0",
-    "eslint": "^6.0.1",
-    "eslint-plugin-import": "^2.18.0",
+    "eslint": "^6.1.0",
+    "eslint-plugin-import": "^2.18.2",
     "nyc": "^14.1.1"
   },
   "dependencies": {

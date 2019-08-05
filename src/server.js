@@ -2,20 +2,21 @@ const grpc = require('grpc')
 const {isNumber} = require('core-util-is')
 
 const config = require('./config')
-const Loader = require('./loader')
+const {Loader} = require('./loader')
 const {Application} = require('./application')
 
 class Server {
   constructor (rawRoot, rawConfig = {}) {
     const root = config.root(rawRoot)
+    const cfg = config.server(rawConfig, root)
 
-    this._options = config.server(rawConfig, root)
     this._server = new grpc.Server()
     this._app = new Application()
     this._loader = new Loader({
       app: this._app,
       server: this._server,
-      root
+      root,
+      config: cfg
     })
 
     this._loader.load()
