@@ -143,7 +143,7 @@ Start the gaea server.
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 
 If we have a `foo` package in a proto file, and inside the `foo` package there is a `Bar` service, then we must put a `foo/Bar.js` file in `/path/to/example/service/`.

@@ -1,13 +1,11 @@
 syntax = "proto3";
 
-import "comm.proto";
+import "emptyMessage.proto";
 
-package helloworld;
+package ErrorControl;
 
-service Greeter2 {
+service Throw {
   rpc Throws (EmptyMessage) returns (EmptyMessage) {}
   rpc ThrowsNoCode (EmptyMessage) returns (EmptyMessage) {}
   rpc Rejects (EmptyMessage) returns (EmptyMessage) {}
 }
-
-message EmptyMessage {}
