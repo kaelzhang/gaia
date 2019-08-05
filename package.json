@@ -44,7 +44,7 @@
     "url": "https://github.com/kaelzhang/gaea/issues"
   },
   "devDependencies": {
-    "@ostai/eslint-config": "^3.3.2",
+    "@ostai/eslint-config": "^3.4.0",
     "ava": "^2.2.0",
     "codecov": "^3.5.0",
     "egg-mysql": "^3.0.0",

@@ -5,10 +5,10 @@ const PREFIX = 'gaea:'
 
 const symbol = key => Symbol(PREFIX + key)
 
-const define = (host, key, value, writable = false) =>
+const define = (host, key, value, enumerable = false) =>
   Object.defineProperty(host, key, {
     value,
-    writable
+    enumerable
   })
 
 const defineGetter = (host, key, get) =>

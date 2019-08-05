@@ -132,13 +132,17 @@ class Loader {
   loadServices () {
     const {services} = this._config
     const context_services = this._context.service
-console.log(this._config)
+
     for (const [name, {
       host,
       path
     }] of Object.entries(services)) {
-      define(context_services, name,
-        new Client(path).connect(host))
+      define(
+        context_services,
+        name,
+        new Client(path).connect(host),
+        true
+      )
     }
   }
 }

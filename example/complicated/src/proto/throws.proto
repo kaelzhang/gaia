@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "emptyMessage.proto";
+import "message.proto";
 
 package ErrorControl;
 
