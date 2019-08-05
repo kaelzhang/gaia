@@ -35,8 +35,8 @@ const wrapClientMethods = (real_client, methods, error_props) => {
 }
 
 class Client {
-  constructor (root, rawConfig = {}) {
-    this._config = clientConfig(rawConfig, checkRoot(root))
+  constructor (root, rawConfig) {
+    this._config = clientConfig(checkRoot(root), rawConfig)
   }
 
   connect (host) {

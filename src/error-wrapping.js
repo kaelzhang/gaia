@@ -1,7 +1,8 @@
 const grpc = require('grpc')
 const {isString} = require('core-util-is')
 
-const KEY_GAEA = '__gaea:is_node_gaea'
+// `KEY_GAEA` should not contains special characters, such as `:`
+const KEY_GAEA = '__is_gaea'
 const KEY_METADATA = 'metadata'
 
 // Ref

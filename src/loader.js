@@ -85,7 +85,7 @@ class Loader {
     try {
       return {
         service_path: p,
-        methods: require(p)
+        methods: requireModule(p)
       }
     } catch (err) {
       throw error('ERR_LOAD_CONTROLLER', p, package_name, err.stack)
@@ -132,7 +132,7 @@ class Loader {
   loadServices () {
     const {services} = this._config
     const context_services = this._context.service
-
+console.log(this._config)
     for (const [name, {
       host,
       path

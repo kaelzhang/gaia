@@ -8,9 +8,9 @@ const {Loader} = require('./loader')
 const {Application} = require('./application')
 
 class Server {
-  constructor (rawRoot, rawConfig = {}) {
+  constructor (rawRoot, rawConfig) {
     const root = checkRoot(rawRoot)
-    const cfg = serverConfig(rawConfig, root)
+    const cfg = serverConfig(root, rawConfig)
 
     this._server = new grpc.Server()
     this._app = new Application()

@@ -13,6 +13,7 @@ const makeArray = require('make-array')
 const resolveFrom = require('resolve-from')
 
 const {error} = require('./error')
+const {requireModule} = require('./utils')
 
 const DEFAULT_LOADER_OPTIONS = {
   keepCase: true,
@@ -20,6 +21,8 @@ const DEFAULT_LOADER_OPTIONS = {
   enums: String,
   defaults: true,
   oneofs: true
+
+  // includeDirs `Array<string>` A list of search paths for imported .proto files.
 }
 
 const resolvePackage = (from, package_name) => {
@@ -178,6 +181,7 @@ const Plugin = shape({
   },
 
   package: {
+    enumerable: false,
     when () {
       return !this.parent.path
     },
@@ -243,13 +247,27 @@ const SERVER_SHAPE = {
 const ServerConfig = shape(SERVER_SHAPE)
 const ClientConfig = shape(COMMON_SHAPE)
 
+const readConfig = root => {
+  const path = join(root, 'config.js')
+
+  try {
+    return requireModule(path)
+  } catch (err) {
+    if (err.code !== 'MODULE_NOT_FOUND') {
+      throw error('ERR_LOAD_CONFIG', path, err.stack)
+    }
+  }
+
+  return {}
+}
+
 module.exports = {
-  serverConfig (config, root) {
-    return ServerConfig.from(config, [root])
+  serverConfig (root, config) {
+    return ServerConfig.from(config || readConfig(root), [root])
   },
 
-  clientConfig (config, root) {
-    return ClientConfig.from(config, [root])
+  clientConfig (root, config) {
+    return ClientConfig.from(config || readConfig(root), [root])
   },
 
   checkRoot (root) {

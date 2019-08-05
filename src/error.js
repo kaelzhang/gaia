@@ -1,7 +1,7 @@
 const {Errors} = require('err-object')
 
 const {E, TE, error} = new Errors({
-  codePrefix: '[gaea] '
+  messagePrefix: '[gaea] '
 })
 
 TE('INVALID_ROOT', 'root must be a string')
@@ -34,6 +34,8 @@ E('NO_PACKAGE_GAEA_PATH',
   `package.json contains no gaea.path in package "%s"${OR_PATH}`)
 
 E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
+
+E('ERR_LOAD_CONFIG', 'fails to load config file "%s", reason: %s')
 
 E('ERR_LOAD_PLUGIN', 'fails to load plugin, reason: %s')
 
