@@ -22,6 +22,50 @@ const DEFAULT_LOADER_OPTIONS = {
   oneofs: true
 }
 
+const resolvePackage = (from, package_name) => {
+  try {
+    const pkgFile = resolveFrom(from, `${package_name}/package.json`)
+    return dirname(pkgFile)
+  } catch (err) {
+    if (err.ENOENT) {
+      throw error('PACKAGE_NOT_FOUND', package_name)
+    }
+
+    throw err
+  }
+}
+
+const getGaeaPath = path => {
+  let pkg
+
+  try {
+    pkg = fs.readJsonSync(join(path, 'package.json'))
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw error('ERR_READ_PKG', path, err.stack)
+    }
+  }
+
+  const rel_path = pkg && access(pkg, 'gaea.path')
+
+  const gaea_path = rel_path
+    ? resolve(path, rel_path)
+    : path
+
+  try {
+    fs.accessSync(gaea_path, fs.constants.R_OK)
+  } catch (err) {
+    throw error('PATH_NO_ACCESSIBLE', gaea_path, err.stack)
+  }
+
+  const stat = fs.statSync(gaea_path)
+  if (!stat.isDirectory()) {
+    throw error('PATH_NOT_DIR', gaea_path)
+  }
+
+  return gaea_path
+}
+
 const load = (proto_path, root) => {
   try {
     return protoLoader.loadSync(proto_path, {
@@ -105,19 +149,6 @@ const COMMON_SHAPE = {
   }
 }
 
-const resolvePackage = (from, package_name) => {
-  try {
-    const pkgFile = resolveFrom(from, `${package_name}/package.json`)
-    return dirname(pkgFile)
-  } catch (err) {
-    if (err.ENOENT) {
-      throw error('PACKAGE_NOT_FOUND', package_name)
-    }
-
-    throw err
-  }
-}
-
 const ensurePath = errorCode => path => {
   const resolved = resolve(path)
 
@@ -187,13 +218,8 @@ const Service = shape({
       }
 
       const pkgRoot = resolvePackage(root, package_name)
-      const pkg = fs.readJsonSync(join(pkgRoot, 'package.json'))
 
-      const path = access(pkg, 'gaea.path')
-
-      this.parent.path = path
-        ? resolve(pkgRoot, path)
-        : pkgRoot
+      this.parent.path = getGaeaPath(pkgRoot)
     }
   }
 })
@@ -218,32 +244,19 @@ const ServerConfig = shape(SERVER_SHAPE)
 const ClientConfig = shape(COMMON_SHAPE)
 
 module.exports = {
-  server (config, root) {
+  serverConfig (config, root) {
     return ServerConfig.from(config, [root])
   },
 
-  client (config, root) {
+  clientConfig (config, root) {
     return ClientConfig.from(config, [root])
   },
 
-  root (root) {
+  checkRoot (root) {
     if (!isString(root)) {
       throw error('INVALID_ROOT', root)
     }
 
-    const resolved = resolve(root)
-
-    try {
-      fs.accessSync(root, fs.constants.R_OK)
-    } catch (err) {
-      throw error('ROOT_NO_ACCESSIBLE', root)
-    }
-
-    const stat = fs.statSync(resolved)
-    if (!stat.isDirectory()) {
-      throw error('ROOT_NOT_DIR', root)
-    }
-
-    return resolved
+    return getGaeaPath(root)
   }
 }

@@ -1,7 +1,10 @@
 const {credentials} = require('grpc')
 const {set} = require('object-access')
 
-const config = require('./config')
+const {
+  clientConfig,
+  checkRoot
+} = require('./config')
 const {iterateProtos} = require('./utils')
 const {unwrap} = require('./error-wrapping')
 
@@ -33,7 +36,7 @@ const wrapClientMethods = (real_client, methods, error_props) => {
 
 class Client {
   constructor (root, rawConfig = {}) {
-    this._config = config.client(rawConfig, config.root(root))
+    this._config = clientConfig(rawConfig, checkRoot(root))
   }
 
   connect (host) {

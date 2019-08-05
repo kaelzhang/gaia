@@ -6,9 +6,11 @@ const {E, TE, error} = new Errors({
 
 TE('INVALID_ROOT', 'root must be a string')
 
-E('ROOT_NO_ACCESSIBLE', 'root "%s" is not accessible or does not exists')
+E('PATH_NO_ACCESSIBLE', 'path "%s" is not accessible, reason: %s')
 
-E('ROOT_NOT_DIR', 'root "%s" is not a directory')
+E('ERR_READ_PKG', 'fails to read package.json in "%s", reason: %s')
+
+E('PATH_NOT_DIR', 'path "%s" is not a directory')
 
 TE('INVALID_PROTO_ROOT', 'config.proto_root must be a string')
 
