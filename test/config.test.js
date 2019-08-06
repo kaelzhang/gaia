@@ -1,28 +1,13 @@
-const test = require('ava')
 const {join} = require('path')
-const log = require('util').debuglog('gaea')
+const {
+  test, check, fixture
+} = require('./check')
 
 const {
   config: {
     checkRoot, serverConfig
   }
 } = require('../src')
-
-const fixture = (...sub) => join(__dirname, 'fixtures', ...sub)
-
-const check = ([code, run], i) => {
-  test(String(i), t => {
-    try {
-      run()
-    } catch (err) {
-      log(err.stack)
-      t.is(err.code, code)
-      return
-    }
-
-    t.fail('should fail')
-  })
-}
 
 check(['INVALID_ROOT', () => checkRoot(1)], 'invalid root')
 
@@ -46,6 +31,9 @@ const SERVER_CONFIG_CASES = [
   }],
   ['EMPTY_ERROR_PROPS', 'empty', {
     error_props: []
+  }],
+  ['INVALID_PROTO_ROOT', 'empty', {
+    proto_root: 1
   }],
   ['INVALID_PROTO_FILE', 'empty', {
     protos: [1]

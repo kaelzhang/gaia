@@ -6,6 +6,7 @@ const {
 } = require('./config')
 const {Loader} = require('./loader')
 const {Application} = require('./application')
+const {error} = require('./error')
 
 class Server {
   constructor (rawRoot, rawConfig) {
@@ -27,7 +28,7 @@ class Server {
   // TODO: more options to define server credentials
   listen (port) {
     if (!isNumber(port)) {
-      throw new TypeError(`port must be a number, but got \`${port}\``)
+      throw error('INVALID_PORT', port)
     }
 
     const server = this._server

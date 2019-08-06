@@ -3,11 +3,12 @@ const path = require('path')
 const delay = require('delay')
 
 const {
+  example: fixture
+} = require('./check')
+
+const {
   Server, Client
 } = require('../src')
-
-const fixture = (...sub) =>
-  path.join(__dirname, '..', 'example', ...sub)
 
 let Greeter
 
