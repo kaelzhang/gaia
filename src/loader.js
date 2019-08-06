@@ -52,13 +52,8 @@ class Loader {
 
     plugins.forEach(({
       path,
-      enable,
       config
     }) => {
-      if (enable === false) {
-        return
-      }
-
       this._app[CONFIG] = config
 
       const entry = join(path, 'app.js')

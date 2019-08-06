@@ -105,7 +105,6 @@ interface Package {
 }
 
 interface Plugin extends Package {
-  enable: boolean
   // Configurations for the plugin
   config: object
 }
