@@ -82,8 +82,6 @@ Connects to the gRPC server and returns the service methods
 
 - **host** `string` the server host to connect to which includes the server hostname and port and whose pattern is `<hostname>:<port>`
 
-
-
 ## new Server(root, serverConfig?)
 
 - **root** `path` the root path to load the server from

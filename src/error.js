@@ -20,9 +20,11 @@ TE('INVALID_ERROR_PROPS', 'config.error_props must be an array of strings')
 
 E('EMPTY_ERROR_PROPS', 'config.error_props must not be an empty array')
 
+TE('INVALID_PROTO_FILE', 'config.protos[%s] must be a string')
+
 const OR_PATH = ', or service.path should be specified'
 
-E('PACKAGE_NOT_FOUND', 'package "%s" not found')
+E('MODULE_NOT_FOUND', 'fails to resolve package "%s"')
 
 E('SERVICE_PATH_NOT_DIR', 'service path not found or not a directory')
 E('PLUGIN_PATH_NOT_DIR', 'plugin path not found or not a directory')

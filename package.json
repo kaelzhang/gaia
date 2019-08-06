@@ -4,8 +4,9 @@
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {
-    "test": "NODE_DEBUG=gaea nyc ava --timeout=10s --verbose",
-    "test:dev": "NODE_DEBUG=gaea nyc ava --timeout=10s --verbose && npm run report:dev",
+    "test:only": "nyc ava --timeout=10s --verbose",
+    "test": "npm run test:only",
+    "test:dev": "NODE_DEBUG=gaea npm run test:only && npm run report:dev",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "posttest": "npm run report",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "ava": "^2.2.0",
     "codecov": "^3.5.0",
+    "delay": "^4.3.0",
     "egg-bog": "^1.0.2",
     "nyc": "^14.1.1"
   },

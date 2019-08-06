@@ -1,5 +1,6 @@
 const test = require('ava')
 const path = require('path')
+const delay = require('delay')
 
 const {
   Server, Client
@@ -22,6 +23,8 @@ test.before(async () => {
   .connect('localhost:50051')
   .Greeter
 
+  await delay(100)
+
   const reject_root = fixture('complicated')
   new Server(reject_root).listen(50052)
 
@@ -31,6 +34,8 @@ test.before(async () => {
   // eslint-disable-next-line prefer-destructuring
   Throw = client.ErrorControl.Throw
   Greeter2 = client.Greeter
+
+  await delay(100)
 })
 
 test('sayHello', async t => {

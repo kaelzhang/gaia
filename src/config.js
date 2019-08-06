@@ -30,20 +30,34 @@ const resolvePackage = (from, package_name) => {
     const pkgFile = resolveFrom(from, `${package_name}/package.json`)
     return dirname(pkgFile)
   } catch (err) {
-    if (err.ENOENT) {
-      throw error('PACKAGE_NOT_FOUND', package_name)
-    }
-
-    throw err
+    throw error('MODULE_NOT_FOUND', package_name)
   }
 }
 
+const isDirectory = dir => {
+  let stat
+
+  try {
+    stat = fs.statSync(dir)
+  } catch (err) {
+    return false
+  }
+
+  return stat.isDirectory()
+}
+
+// The gaea path could be other than the root path of a npm package
+// by specifying `package.gaea.path`
 const getGaeaPath = path => {
   let pkg
 
   try {
     pkg = fs.readJsonSync(join(path, 'package.json'))
   } catch (err) {
+    if (err.code === 'ENOTDIR') {
+      throw error('PATH_NOT_DIR', path)
+    }
+
     if (err.code !== 'ENOENT') {
       throw error('ERR_READ_PKG', path, err.stack)
     }
@@ -52,7 +66,8 @@ const getGaeaPath = path => {
   const rel_path = pkg && access(pkg, 'gaea.path')
 
   const gaea_path = rel_path
-    ? resolve(path, rel_path)
+    // We only allow relative `rel_path` here, so just `path.join`
+    ? join(path, rel_path)
     : path
 
   try {
@@ -61,8 +76,7 @@ const getGaeaPath = path => {
     throw error('PATH_NO_ACCESSIBLE', gaea_path, err.stack)
   }
 
-  const stat = fs.statSync(gaea_path)
-  if (!stat.isDirectory()) {
+  if (!isDirectory(gaea_path)) {
     throw error('PATH_NOT_DIR', gaea_path)
   }
 
@@ -81,18 +95,6 @@ const load = (proto_path, root) => {
 }
 
 const isArrayString = array => isArray(array) && array.every(isString)
-
-const isDirectory = dir => {
-  let stat
-
-  try {
-    stat = fs.statSync(dir)
-  } catch (err) {
-    return false
-  }
-
-  return stat.isDirectory()
-}
 
 const TypeRoot = (default_value, error_code) => ({
   validate (value) {
@@ -136,7 +138,7 @@ const COMMON_SHAPE = {
     set (protos) {
       return makeArray(protos).map((p, i) => {
         if (!isString(p)) {
-          throw new TypeError(`config.protos[${i}] must be a string`)
+          throw error('INVALID_PROTO_FILE', i)
         }
 
         const {proto_root} = this.parent
