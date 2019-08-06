@@ -1,5 +1,10 @@
+const {dirname} = require('path')
 const {loadPackageDefinition} = require('grpc')
 const access = require('object-access')
+const resolveFrom = require('resolve-from')
+const {isArray, isString} = require('core-util-is')
+
+const {error} = require('./error')
 
 const PREFIX = 'gaea:'
 
@@ -63,10 +68,23 @@ const iterateProtos = (protos, iteratee) => {
   })
 }
 
+const resolvePackage = (from, package_name) => {
+  try {
+    const pkgFile = resolveFrom(from, `${package_name}/package.json`)
+    return dirname(pkgFile)
+  } catch (err) {
+    throw error('MODULE_NOT_FOUND', package_name)
+  }
+}
+
+const isArrayString = array => isArray(array) && array.every(isString)
+
 module.exports = {
   symbol,
   define,
   defineGetter,
   requireModule,
-  iterateProtos
+  iterateProtos,
+  resolvePackage,
+  isArrayString
 }

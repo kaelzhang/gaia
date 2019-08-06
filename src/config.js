@@ -4,16 +4,17 @@ const {
   arrayOf,
   objectOf
 } = require('skema')
-const {resolve, dirname, join} = require('path')
-const {isArray, isString} = require('core-util-is')
-const access = require('object-access')
+const {resolve, join} = require('path')
+const {isString} = require('core-util-is')
 const glob = require('glob')
 const protoLoader = require('@grpc/proto-loader')
 const makeArray = require('make-array')
-const resolveFrom = require('resolve-from')
 
 const {error} = require('./error')
-const {requireModule} = require('./utils')
+const {
+  requireModule, resolvePackage, isArrayString
+} = require('./utils')
+const {PACKAGE} = require('./package')
 
 const DEFAULT_LOADER_OPTIONS = {
   keepCase: true,
@@ -23,15 +24,6 @@ const DEFAULT_LOADER_OPTIONS = {
   oneofs: true
 
   // includeDirs `Array<string>` A list of search paths for imported .proto files.
-}
-
-const resolvePackage = (from, package_name) => {
-  try {
-    const pkgFile = resolveFrom(from, `${package_name}/package.json`)
-    return dirname(pkgFile)
-  } catch (err) {
-    throw error('MODULE_NOT_FOUND', package_name)
-  }
 }
 
 const isDirectory = dir => {
@@ -46,43 +38,6 @@ const isDirectory = dir => {
   return stat.isDirectory()
 }
 
-// The gaea path could be other than the root path of a npm package
-// by specifying `package.gaea.path`
-const getGaeaPath = path => {
-  let pkg
-
-  try {
-    pkg = fs.readJsonSync(join(path, 'package.json'))
-  } catch (err) {
-    if (err.code === 'ENOTDIR') {
-      throw error('PATH_NOT_DIR', path)
-    }
-
-    if (err.code !== 'ENOENT') {
-      throw error('ERR_READ_PKG', path, err.stack)
-    }
-  }
-
-  const rel_path = pkg && access(pkg, 'gaea.path')
-
-  const gaea_path = rel_path
-    // We only allow relative `rel_path` here, so just `path.join`
-    ? join(path, rel_path)
-    : path
-
-  try {
-    fs.accessSync(gaea_path, fs.constants.R_OK)
-  } catch (err) {
-    throw error('PATH_NO_ACCESSIBLE', gaea_path, err.stack)
-  }
-
-  if (!isDirectory(gaea_path)) {
-    throw error('PATH_NOT_DIR', gaea_path)
-  }
-
-  return gaea_path
-}
-
 const load = (proto_path, root) => {
   try {
     return protoLoader.loadSync(proto_path, {
@@ -93,8 +48,6 @@ const load = (proto_path, root) => {
     throw error('ERR_LOAD_PROTO', proto_path, err.stack)
   }
 }
-
-const isArrayString = array => isArray(array) && array.every(isString)
 
 const TypeRoot = (default_value, error_code) => ({
   validate (value) {
@@ -165,11 +118,6 @@ const ensurePath = errorCode => path => {
 }
 
 const Plugin = shape({
-  enable: {
-    type: 'boolean',
-    default: true
-  },
-
   config: {
     type: 'object',
     default () {
@@ -223,9 +171,7 @@ const Service = shape({
         throw error('PACKAGE_OR_PATH_REQUIRED', 'service')
       }
 
-      const pkgRoot = resolvePackage(root, package_name)
-
-      this.parent.path = getGaeaPath(pkgRoot)
+      this.parent.path = resolvePackage(root, package_name)
     }
   }
 })
@@ -246,9 +192,6 @@ const SERVER_SHAPE = {
   }
 }
 
-const ServerConfig = shape(SERVER_SHAPE)
-const ClientConfig = shape(COMMON_SHAPE)
-
 const readConfig = root => {
   const path = join(root, 'config.js')
 
@@ -263,20 +206,32 @@ const readConfig = root => {
   return {}
 }
 
+const createConfigShape = config_shape => {
+  const ConfigShape = shape(config_shape)
+
+  return shape({
+    ...PACKAGE,
+    config: {
+      default () {
+        const {gaea_path} = this.parent
+        return readConfig(gaea_path)
+      },
+      set (config) {
+        return ConfigShape.from(config, [this.parent.gaea])
+      }
+    }
+  })
+}
+
+const ClientConfig = createConfigShape(COMMON_SHAPE)
+const ServerConfig = createConfigShape(SERVER_SHAPE)
+
 module.exports = {
   serverConfig (root, config) {
-    return ServerConfig.from(config || readConfig(root), [root])
+    return ServerConfig.from({root, config})
   },
 
   clientConfig (root, config) {
-    return ClientConfig.from(config || readConfig(root), [root])
-  },
-
-  checkRoot (root) {
-    if (!isString(root)) {
-      throw error('INVALID_ROOT', root)
-    }
-
-    return getGaeaPath(root)
+    return ClientConfig.from({root, config})
   }
 }

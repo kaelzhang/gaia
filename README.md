@@ -3,10 +3,10 @@
 
 # gaea
 
-The manager to wrap [grpc](https://grpc.io) services and hold .proto files.
+Gaea, the very framework to make [gRPC](https://grpc.io) services. Gaea defines the way we write gRPC services.
 
 - **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaea` will do it for you.
-- **Manage .proto files** `gaea` allows us to share proto files between server and clients. `gaea` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
+- **Manage `.proto` files** `gaea` allows us to share proto files between server and clients. `gaea` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
 - **Eggjs compatible plugins** `gaea` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
 - **Restful API service made easy** `gaea` provides a convenient way to define restful API routings upon the existing gRPC services.
 
@@ -202,7 +202,7 @@ const {Greeter} = new Client('/path/to/foo/node_modules/hello').connect('localho
 
 ### Import `.proto` files from `hello`
 
-Since project `foo`, as we introduced above, has a dependency `hello`, we could import `.proto` files from package `hello`
+Since project `foo`, as we introduced above, has a dependency `hello`, we could import `.proto` files from package `hello`.
 
 /path/to/foo/proto/foo.proto:
 
@@ -221,7 +221,7 @@ service FooGreeter {
 
 In order to do that, we need to declare that `hello` is a `gaea` dependency of `foo` by adding some fields in package.json:
 
-```
+```js
 {
   "name": "foo",
   "gaea": {
@@ -240,6 +240,12 @@ In order to do that, we need to declare that `hello` is a `gaea` dependency of `
 And `gaea` will manage the [`--proto_path`](https://developers.google.com/protocol-buffers/docs/proto3#importing-definitions)s ([includeDirs](https://www.npmjs.com/package/@grpc/proto-loader)) for you, so that gRPC Protobuf Loader will know where to search and import `.proto` files
 
 ### More about `includeDirs`
+
+## How to write a `gaea` server
+
+## Configurations
+
+A `"gaea"` field is not always required in `package.json`, we could
 
 ## License
 
