@@ -78,7 +78,7 @@ const initSingleton = ({
   } = config
 
   if (client && clients) {
-    throw error('CLIENT_CONFLICT', name)
+    throw error('PLUGIN_CLIENT_CONFLICT', name)
   }
 
   const options = {

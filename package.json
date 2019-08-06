@@ -1,6 +1,6 @@
 {
   "name": "gaea",
-  "version": "5.0.4",
+  "version": "6.0.0",
   "description": "The manager to wrap grpc services and hold .proto files.",
   "main": "src/index.js",
   "scripts": {

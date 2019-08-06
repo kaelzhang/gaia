@@ -49,6 +49,9 @@ E('ERR_LOAD_CONTROLLER',
 E('RPC_METHOD_NOT_FOUND',
   'rpc method "%s" is required in "%s"')
 
+E('PLUGIN_CLIENT_CONFLICT',
+  'can not set config.client and config.clients both for plugin "%s"')
+
 module.exports = {
   error
 }

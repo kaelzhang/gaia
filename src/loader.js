@@ -49,7 +49,7 @@ class Loader {
 
   loadPlugins () {
     const {plugins} = this._config
-console.log(this._config)
+
     plugins.forEach(({
       path,
       config
