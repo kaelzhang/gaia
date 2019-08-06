@@ -115,7 +115,6 @@ interface Service extends Package {
 interface Services {
   [name: string]: Service
 }
-
 ```
 
 ```js
@@ -137,6 +136,88 @@ const g = gaea({
 - **port** `number` the port which gRPC server will listen to.
 
 Start the gaea server.
+
+## How `gaea` makes proto files sharable and portable?
+
+`gaea` takes full advantage of npm packages to share proto files. A minimun `gaea` service portable (service `hello`, as well as package `hello`) could be:
+
+```
+/path/to/hello/
+  |-- proto/
+  |       |-- hello.proto
+  |-- package.json
+```
+
+And in `proto/hello.proto`:
+
+```protobuf
+syntax = "proto3";
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+```
+
+package.json
+
+```js
+{
+  "name": "hello",
+  // We need a "gaea" field to tell that it is a gaea portable
+  "gaea": {}
+}
+```
+
+Apparently, package `hello` has everything we need to create a client agent for service `hello`.
+
+### Create the client of `hello`
+
+Assume that we have a new project `foo`, and we `npm install hello`.
+
+```
+/path/to/foo/
+  |-- proto/
+  |        |-- foo.proto
+  |-- node_modules/
+  |              |-- hello/
+  |-- package.json
+```
+
+Then if the `hello` service is already running on port `8000`, we could create a hello client by following lines:
+
+```js
+const {Client} = require('gaea')
+const {Greeter} = new Client('/path/to/foo/node_modules/hello').connect('localhost:8000')
+```
+
+### Import proto files from `hello`
+
+Since project `foo`, as we introduced above, has a dependency `hello`, we could import proto files from package `hello`
+
+/path/to/foo/proto/foo.proto:
+
+```protobuf
+syntax = "proto3";
+
+// We could install a package and import things from it
+// as well as we do in JavaScript es modules. Oh yeah! 😆
+import "hello/proto/hello.proto"
+
+service FooGreeter {
+  // We could reuse message types from package `hello`
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+```
+
+And `gaea` will manage the [`--proto_path`](https://developers.google.com/protocol-buffers/docs/proto3#importing-definitions)s ([includeDirs](https://www.npmjs.com/package/@grpc/proto-loader)) for you.
 
 ## License
 
