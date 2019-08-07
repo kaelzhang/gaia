@@ -1,19 +1,19 @@
-[![Build Status](https://travis-ci.org/kaelzhang/gaea.svg?branch=master)](https://travis-ci.org/kaelzhang/gaea)
-[![Coverage](https://codecov.io/gh/kaelzhang/gaea/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/gaea)
+[![Build Status](https://travis-ci.org/kaelzhang/gaia.svg?branch=master)](https://travis-ci.org/kaelzhang/gaia)
+[![Coverage](https://codecov.io/gh/kaelzhang/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/gaia)
 
-# gaea
+# gaia
 
-Gaea, the very framework to make [gRPC](https://grpc.io) services. Gaea defines the way we write gRPC services.
+Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines the way we write gRPC services.
 
-- **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaea` will do it for you.
-- **Manage `.proto` files** `gaea` allows us to share proto files between server and clients. `gaea` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
-- **Eggjs compatible plugins** `gaea` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
-- **Restful API service made easy** `gaea` provides a convenient way to define restful API routings upon the existing gRPC services.
+- **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaia` will do it for you.
+- **Manage `.proto` files** `gaia` allows us to share proto files between server and clients. `gaia` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
+- **Eggjs compatible plugins** `gaia` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
+- **Restful API service made easy** `gaia` provides a convenient way to define restful API routings upon the existing gRPC services.
 
 ## Install
 
 ```sh
-$ npm i gaea
+$ npm i gaia
 ```
 
 ## APIs
@@ -21,12 +21,12 @@ $ npm i gaea
 ```js
 const {
   Server, Client
-} = require('gaea')
+} = require('gaia')
 
 const root = path.join(__dirname, 'example')
 ```
 
-To make better understanding the usage of `gaea`, the example below is based on the demo in the [`example/hello`](https://github.com/kaelzhang/gaea/tree/master/example/hello) directory.
+To make better understanding the usage of `gaia`, the example below is based on the demo in the [`example/hello`](https://github.com/kaelzhang/gaia/tree/master/example/hello) directory.
 
 Start server:
 
@@ -56,14 +56,14 @@ run()
 
 ## new Client(root, clientConfig?)
 
-Creates the gaea client.
+Creates the gaia client.
 
 - **root** `path` the root path to load the client from
-- **clientConfig?** `BaseConfig` client configuration. If not specified, `gaea` will load configuration from `${root}/config.js`
+- **clientConfig?** `BaseConfig` client configuration. If not specified, `gaia` will load configuration from `${root}/config.js`
 
 ```ts
 interface BaseConfig {
-  // Tells `gaea` which properties of error should be
+  // Tells `gaia` which properties of error should be
   // - collected, serialized and transmitted to the clients.
   // - or deseriialized from server
   // `error_props` defaults to `['code', 'message']`
@@ -71,7 +71,7 @@ interface BaseConfig {
   // specifies where to load proto files.
   proto_root: string
   // Proto filenames inside `proto_root`.
-  // If not specified, gaea will use all `.proto` files inside `proto_root`.
+  // If not specified, gaia will use all `.proto` files inside `proto_root`.
   protos?: Array<string>
 }
 ```
@@ -85,7 +85,7 @@ Connects to the gRPC server and returns the service methods
 ## new Server(root, serverConfig?)
 
 - **root** `path` the root path to load the server from
-- **serverConfig?** `ServerConfig` server configurations. If not specified, `gaea` will load configuration from `${root}/config.js`
+- **serverConfig?** `ServerConfig` server configurations. If not specified, `gaia` will load configuration from `${root}/config.js`
 
 ```ts
 interface ServerConfig extends BaseConfig {
@@ -118,8 +118,8 @@ interface Services {
 ```
 
 ```js
-const g = gaea({
-  // if the server throws an `error`, gaea will collect
+const g = gaia({
+  // if the server throws an `error`, gaia will collect
   // - `error.code`,
   // - `error.message`
   // - `error.stack`,
@@ -135,13 +135,13 @@ const g = gaea({
 
 - **port** `number` the port which gRPC server will listen to.
 
-Start the gaea server.
+Start the gaia server.
 
-## How `gaea` makes proto files sharable and portable?
+## How `gaia` makes proto files sharable and portable?
 
-`gaea` takes full advantage of npm packages to share proto files.
+`gaia` takes full advantage of npm packages to share proto files.
 
-A minimun `gaea` service portable, as well as service `hello` or package `hello`, could be:
+A minimun `gaia` service portable, as well as service `hello` or package `hello`, could be:
 
 ```
 /path/to/hello/
@@ -173,8 +173,8 @@ package.json
 ```js
 {
   "name": "hello",
-  // We need a "gaea" field to tell that it is a gaea portable
-  "gaea": {}
+  // We need a "gaia" field to tell that it is a gaia portable
+  "gaia": {}
 }
 ```
 
@@ -196,7 +196,7 @@ Assume that we have a new project `foo`, and we `npm install hello`.
 Then if the `hello` service is already running on port `8000`, we could create a hello client by following lines:
 
 ```js
-const {Client} = require('gaea')
+const {Client} = require('gaia')
 const {Greeter} = new Client('/path/to/foo/node_modules/hello').connect('localhost:8000')
 ```
 
@@ -219,12 +219,12 @@ service FooGreeter {
 }
 ```
 
-In order to do that, we need to declare that `hello` is a `gaea` dependency of `foo` by adding some fields in package.json:
+In order to do that, we need to declare that `hello` is a `gaia` dependency of `foo` by adding some fields in package.json:
 
 ```js
 {
   "name": "foo",
-  "gaea": {
+  "gaia": {
     "dependencies": [
       // We have to add "hello" here.
       "hello"
@@ -237,15 +237,15 @@ In order to do that, we need to declare that `hello` is a `gaea` dependency of `
 }
 ```
 
-And `gaea` will manage the [`--proto_path`](https://developers.google.com/protocol-buffers/docs/proto3#importing-definitions)s ([includeDirs](https://www.npmjs.com/package/@grpc/proto-loader)) for you, so that gRPC Protobuf Loader will know where to search and import `.proto` files
+And `gaia` will manage the [`--proto_path`](https://developers.google.com/protocol-buffers/docs/proto3#importing-definitions)s ([includeDirs](https://www.npmjs.com/package/@grpc/proto-loader)) for you, so that gRPC Protobuf Loader will know where to search and import `.proto` files
 
 ### More about `includeDirs`
 
-## How to write a `gaea` server
+## How to write a `gaia` server
 
 ## Configurations
 
-A `"gaea"` field is not always required in `package.json`, we could
+A `"gaia"` field is not always required in `package.json`, we could
 
 ## License
 

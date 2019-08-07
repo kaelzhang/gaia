@@ -1,12 +1,12 @@
 {
-  "name": "gaea",
+  "name": "gaia",
   "version": "6.0.0",
-  "description": "Gaea, the very framework to make gRPC services",
+  "description": "Gaia, the very framework to make gRPC services",
   "main": "src/index.js",
   "scripts": {
     "test:only": "nyc ava --timeout=10s --verbose",
     "test": "npm run test:only",
-    "test:dev": "NODE_DEBUG=gaea npm run test:only && npm run report:dev",
+    "test:dev": "NODE_DEBUG=gaia npm run test:only && npm run report:dev",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "posttest": "npm run report",
@@ -20,10 +20,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/kaelzhang/gaea.git"
+    "url": "git://github.com/kaelzhang/gaia.git"
   },
   "keywords": [
-    "gaea",
+    "gaia",
     "app",
     "application",
     "framework",
@@ -46,7 +46,7 @@
   "author": "kaelzhang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kaelzhang/gaea/issues"
+    "url": "https://github.com/kaelzhang/gaia/issues"
   },
   "devDependencies": {
     "@ostai/eslint-config": "^3.4.0",

@@ -136,7 +136,7 @@ const Plugin = shape({
 const Plugins = arrayOf(Plugin)
 
 const Service = shape({
-  // The path contains gaea service code
+  // The path contains gaia service code
   path: {
     optional: true,
     set: ensurePath('SERVICE_PATH_NOT_DIR')
@@ -199,13 +199,13 @@ const createConfigShape = config_shape => {
     config: {
       set (config) {
         const {
-          gaea_path,
+          gaia_path,
           pkg
         } = this.parent
 
         return ConfigShape.from(
-          config || readConfig(gaea_path) || pkg.gaea,
-          [this.parent.gaea_path]
+          config || readConfig(gaia_path) || pkg.gaia,
+          [this.parent.gaia_path]
         )
       }
     }

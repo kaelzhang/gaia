@@ -7,7 +7,7 @@ const fs = require('fs-extra')
 
 const {error} = require('./error')
 
-const PREFIX = 'gaea:'
+const PREFIX = 'gaia:'
 
 const symbol = key => Symbol(PREFIX + key)
 

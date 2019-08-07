@@ -17,7 +17,7 @@ const SERVER_CONFIG_CASES = [
   ['PATH_NOT_DIR', 'err-not-dir'],
   ['ERR_READ_PKG', 'err-read-pkg'],
   ['PATH_NO_ACCESSIBLE', 'err-path-no-access'],
-  ['PATH_NOT_DIR', 'err-gaea-path-not-dir'],
+  ['PATH_NOT_DIR', 'err-gaia-path-not-dir'],
 
   ['ERR_LOAD_PROTO', 'err-load-proto'],
   ['INVALID_ERROR_PROPS', 'empty', {
@@ -84,6 +84,6 @@ test.only('config servie package', t => {
   })
 
   const path = join(__dirname, '..', 'node_modules', 'egg-bog')
-console.log(config)
+
   t.is(config.services.foo.path, path)
 })

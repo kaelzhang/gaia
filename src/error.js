@@ -1,7 +1,7 @@
 const {Errors} = require('err-object')
 
 const {E, TE, error} = new Errors({
-  messagePrefix: '[gaea] '
+  messagePrefix: '[gaia] '
 })
 
 TE('INVALID_ROOT', 'root must be a string')
@@ -35,7 +35,7 @@ E('PACKAGE_OR_PATH_REQUIRED',
   'either %s.package or %s.path should be speicified')
 
 E('NO_PACKAGE_GAEA_PATH',
-  `package.json contains no gaea.path in package "%s"${OR_PATH}`)
+  `package.json contains no gaia.path in package "%s"${OR_PATH}`)
 
 E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
 

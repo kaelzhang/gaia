@@ -26,14 +26,14 @@ const readPkg = root => {
     }
   }
 
-  const {gaea} = pkg
+  const {gaia} = pkg
 
-  // Ensures `pkg.gaea`
-  if (!isObject(gaea)) {
-    if (gaea === UNDEFINED) {
-      pkg.gaea = {}
+  // Ensures `pkg.gaia`
+  if (!isObject(gaia)) {
+    if (gaia === UNDEFINED) {
+      pkg.gaia = {}
     } else {
-      throw error('INVALID_PKG_GAEA', gaea)
+      throw error('INVALID_PKG_GAEA', gaia)
     }
   }
 
@@ -59,30 +59,30 @@ const PACKAGE = {
     }
   },
 
-  // The gaea path could be other than the root path of a npm package
-  // by specifying `package.gaea.path`
-  gaea_path: {
+  // The gaia path could be other than the root path of a npm package
+  // by specifying `package.gaia.path`
+  gaia_path: {
     default: RETURN,
     set () {
       const {root} = this.parent
-      const rel_path = access(this.parent.pkg, 'gaea.path')
+      const rel_path = access(this.parent.pkg, 'gaia.path')
 
-      const gaea_path = rel_path
+      const gaia_path = rel_path
         // We only allow relative `rel_path` here, so just `path.join`
         ? join(root, rel_path)
         : root
 
       try {
-        fs.accessSync(gaea_path, fs.constants.R_OK)
+        fs.accessSync(gaia_path, fs.constants.R_OK)
       } catch (err) {
-        throw error('PATH_NO_ACCESSIBLE', gaea_path, err.stack)
+        throw error('PATH_NO_ACCESSIBLE', gaia_path, err.stack)
       }
 
-      if (!isDirectory(gaea_path)) {
-        throw error('PATH_NOT_DIR', gaea_path)
+      if (!isDirectory(gaia_path)) {
+        throw error('PATH_NOT_DIR', gaia_path)
       }
 
-      return gaea_path
+      return gaia_path
     }
   },
 
@@ -90,7 +90,7 @@ const PACKAGE = {
     default: RETURN,
     set () {
       const {pkg, root} = this.parent
-      const deps = access(pkg, 'gaea.protoDependencies', [])
+      const deps = access(pkg, 'gaia.protoDependencies', [])
       if (!isArrayString(deps)) {
         throw error('INVALID_PROTO_DEPS', deps)
       }

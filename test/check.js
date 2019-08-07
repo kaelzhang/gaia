@@ -1,5 +1,5 @@
 const {join} = require('path')
-const log = require('util').debuglog('gaea')
+const log = require('util').debuglog('gaia')
 const test = require('ava')
 
 const check = ([code, run], i) => {
