@@ -1,4 +1,3 @@
-const fs = require('fs-extra')
 const {
   shape,
   arrayOf,
@@ -12,7 +11,7 @@ const makeArray = require('make-array')
 
 const {error} = require('./error')
 const {
-  requireModule, resolvePackage, isArrayString
+  requireModule, resolvePackage, isArrayString, isDirectory
 } = require('./utils')
 const {PACKAGE} = require('./package')
 
@@ -24,18 +23,6 @@ const DEFAULT_LOADER_OPTIONS = {
   oneofs: true
 
   // includeDirs `Array<string>` A list of search paths for imported .proto files.
-}
-
-const isDirectory = dir => {
-  let stat
-
-  try {
-    stat = fs.statSync(dir)
-  } catch (err) {
-    return false
-  }
-
-  return stat.isDirectory()
 }
 
 const load = (proto_path, root) => {
@@ -202,8 +189,6 @@ const readConfig = root => {
       throw error('ERR_LOAD_CONFIG', path, err.stack)
     }
   }
-
-  return {}
 }
 
 const createConfigShape = config_shape => {
@@ -212,12 +197,16 @@ const createConfigShape = config_shape => {
   return shape({
     ...PACKAGE,
     config: {
-      default () {
-        const {gaea_path} = this.parent
-        return readConfig(gaea_path)
-      },
       set (config) {
-        return ConfigShape.from(config, [this.parent.gaea])
+        const {
+          gaea_path,
+          pkg
+        } = this.parent
+
+        return ConfigShape.from(
+          config || readConfig(gaea_path) || pkg.gaea,
+          [this.parent.gaea_path]
+        )
       }
     }
   })

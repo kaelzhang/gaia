@@ -17,6 +17,10 @@ const readPkg = root => {
   try {
     pkg = fs.readJsonSync(join(root, 'package.json'))
   } catch (err) {
+    if (err.code === 'ENOTDIR') {
+      throw error('PATH_NOT_DIR', root)
+    }
+
     if (err.code !== 'ENOENT') {
       throw error('ERR_READ_PKG', root, err.stack)
     }

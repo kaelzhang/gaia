@@ -5,26 +5,20 @@ const {
 
 const {
   config: {
-    checkRoot, serverConfig
+    serverConfig
   }
 } = require('../src')
 
-check(['INVALID_ROOT', () => checkRoot(1)], 'invalid root')
-
-const CHECK_ROOT_CASES = [
-  ['PATH_NOT_DIR', 'err-not-dir'],
-  ['ERR_READ_PKG', 'err-read-pkg'],
-  ['PATH_NO_ACCESSIBLE', 'err-path-no-access'],
-  ['PATH_NOT_DIR', 'err-gaea-path-not-dir']
-]
-
-CHECK_ROOT_CASES.forEach(([code, dir], i) => {
-  check([code, () => checkRoot(fixture(dir))], `checkRoot: ${i}`)
-})
+check(['INVALID_ROOT', () => serverConfig(1)], 'invalid root')
 
 const host = 'localhost:8888'
 
 const SERVER_CONFIG_CASES = [
+  ['PATH_NOT_DIR', 'err-not-dir'],
+  ['ERR_READ_PKG', 'err-read-pkg'],
+  ['PATH_NO_ACCESSIBLE', 'err-path-no-access'],
+  ['PATH_NOT_DIR', 'err-gaea-path-not-dir'],
+
   ['ERR_LOAD_PROTO', 'err-load-proto'],
   ['INVALID_ERROR_PROPS', 'empty', {
     error_props: 1
@@ -79,8 +73,8 @@ SERVER_CONFIG_CASES.forEach(([code, dir, config], i) => {
     `serverConfig: ${i}: ${code}`)
 })
 
-test('config servie package', t => {
-  const config = serverConfig(fixture('empty'), {
+test.only('config servie package', t => {
+  const {config} = serverConfig(fixture('empty'), {
     services: {
       foo: {
         host,
@@ -90,6 +84,6 @@ test('config servie package', t => {
   })
 
   const path = join(__dirname, '..', 'node_modules', 'egg-bog')
-
+console.log(config)
   t.is(config.services.foo.path, path)
 })

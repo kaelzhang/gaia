@@ -2,7 +2,7 @@ const grpc = require('grpc')
 const {isNumber} = require('core-util-is')
 
 const {
-  serverConfig, checkRoot
+  serverConfig
 } = require('./config')
 const {Loader} = require('./loader')
 const {Application} = require('./application')
@@ -10,8 +10,10 @@ const {error} = require('./error')
 
 class Server {
   constructor (rawRoot, rawConfig) {
-    const root = checkRoot(rawRoot)
-    const cfg = serverConfig(root, rawConfig)
+    const {
+      config,
+      gaea_path: root
+    } = serverConfig(rawRoot, rawConfig)
 
     this._server = new grpc.Server()
     this._app = new Application()
@@ -19,7 +21,7 @@ class Server {
       app: this._app,
       server: this._server,
       root,
-      config: cfg
+      config
     })
 
     this._loader.load()

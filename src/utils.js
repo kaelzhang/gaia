@@ -3,6 +3,7 @@ const {loadPackageDefinition} = require('grpc')
 const access = require('object-access')
 const resolveFrom = require('resolve-from')
 const {isArray, isString} = require('core-util-is')
+const fs = require('fs-extra')
 
 const {error} = require('./error')
 
@@ -79,6 +80,18 @@ const resolvePackage = (from, package_name) => {
 
 const isArrayString = array => isArray(array) && array.every(isString)
 
+const isDirectory = dir => {
+  let stat
+
+  try {
+    stat = fs.statSync(dir)
+  } catch (err) {
+    return false
+  }
+
+  return stat.isDirectory()
+}
+
 module.exports = {
   symbol,
   define,
@@ -86,5 +99,6 @@ module.exports = {
   requireModule,
   iterateProtos,
   resolvePackage,
-  isArrayString
+  isArrayString,
+  isDirectory
 }
