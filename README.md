@@ -267,7 +267,7 @@ And `gaia` will manage the [`--proto_path`](https://developers.google.com/protoc
 
 Take the project `hello` which introduced above for example.
 
-Since we define a `Greeter` service, we must implement the corresponding controller by ourselves.
+Since we define a `Greeter` service in `hello.proto`, we must implement the corresponding controller by ourselves.
 
 Service controllers should be defined in directory `/path/to/hello/controller` which can be changed with by config `controller_root`.
 
@@ -298,11 +298,3 @@ exports.sayHello = ({name}) => ({
 ## License
 
 [MIT](LICENSE)
-
-If we have a `foo` package in a proto file, and inside the `foo` package there is a `Bar` service, then we must put a `foo/Bar.js` file in `/path/to/example/service/`.
-
-And if there is a `Baz` rpc method in the `Bar` service, we must set a `Baz` function as one of the exports of the `foo/Bar.js`. The `Baz` function might have one argument(or no arguments) which accepts the data from the client.
-
-Or there will be errors.
-
-Besides, if there is a `Quux` service which not in any package, we should just put a `Quux.js` file in `/path/to/example/service/`.
