@@ -13,7 +13,9 @@ const {error} = require('./error')
 const {
   requireModule, resolvePackage, isArrayString, isDirectory
 } = require('./utils')
-const {PACKAGE} = require('./package')
+const {
+  PACKAGE, getIncludeDirs
+} = require('./package')
 
 const DEFAULT_LOADER_OPTIONS = {
   keepCase: true,
@@ -25,11 +27,11 @@ const DEFAULT_LOADER_OPTIONS = {
   // includeDirs `Array<string>` A list of search paths for imported .proto files.
 }
 
-const load = (proto_path, root) => {
+const load = (proto_path, includeDirs) => {
   try {
     return protoLoader.loadSync(proto_path, {
       ...DEFAULT_LOADER_OPTIONS,
-      includeDirs: [root]
+      includeDirs
     })
   } catch (err) {
     throw error('ERR_LOAD_PROTO', proto_path, err.stack)
@@ -42,8 +44,8 @@ const TypeRoot = (default_value, error_code) => ({
       throw error(error_code, value)
     }
   },
-  default (root) {
-    return resolve(root, default_value)
+  default ({gaia_path}) {
+    return resolve(gaia_path, default_value)
   },
   set (value) {
     return resolve(this.parent.root, value)
@@ -75,7 +77,7 @@ const COMMON_SHAPE = {
         mark: true
       })
     },
-    set (protos) {
+    set (protos, pkg) {
       return makeArray(protos).map((p, i) => {
         if (!isString(p)) {
           throw error('INVALID_PROTO_FILE', i)
@@ -84,10 +86,11 @@ const COMMON_SHAPE = {
         const {proto_root} = this.parent
 
         const resolved = resolve(proto_root, p)
+        const includeDirs = getIncludeDirs(pkg)
 
         return {
           path: resolved,
-          def: load(p, proto_root)
+          def: load(p, [proto_root, ...includeDirs])
         }
       })
     }
@@ -123,12 +126,12 @@ const Plugin = shape({
       return !this.parent.path
     },
     default () {},
-    set (package_name, root) {
+    set (package_name, {gaia_path}) {
       if (!package_name) {
         throw error('PACKAGE_OR_PATH_REQUIRED', 'plugin')
       }
 
-      this.parent.path = resolvePackage(root, package_name)
+      this.parent.path = resolvePackage(gaia_path, package_name)
     }
   }
 })
@@ -153,12 +156,12 @@ const Service = shape({
       return !this.parent.path
     },
     default () {},
-    set (package_name, root) {
+    set (package_name, {gaia_path}) {
       if (!package_name) {
         throw error('PACKAGE_OR_PATH_REQUIRED', 'service')
       }
 
-      this.parent.path = resolvePackage(root, package_name)
+      this.parent.path = resolvePackage(gaia_path, package_name)
     }
   }
 })
@@ -205,7 +208,7 @@ const createConfigShape = config_shape => {
 
         return ConfigShape.from(
           config || readConfig(gaia_path) || pkg.gaia,
-          [this.parent.gaia_path]
+          [this.parent]
         )
       }
     }

@@ -2,12 +2,13 @@ const {join} = require('path')
 const access = require('object-access')
 const {isObject, isString} = require('core-util-is')
 const fs = require('fs-extra')
+const {shape} = require('skema')
 
 const {
   RETURN, UNDEFINED
 } = require('./constants')
 const {
-  isArrayString, isDirectory
+  isArrayString, isDirectory, resolvePackage
 } = require('./utils')
 const {error} = require('./error')
 
@@ -61,6 +62,9 @@ const PACKAGE = {
 
   // The gaia path could be other than the root path of a npm package
   // by specifying `package.gaia.path`
+
+  // `gaia_path` will be the default --proto-path param to load
+  // .proto files
   gaia_path: {
     default: RETURN,
     set () {
@@ -110,6 +114,72 @@ const PACKAGE = {
   }
 }
 
+class Dir {
+  constructor (path, priority) {
+    this.path = path
+    this.priority = priority
+  }
+}
+
+class IncludeDirs {
+  constructor () {
+    this._dirs = Object.create(null)
+  }
+
+  add (path, priority) {
+    if (path in this._dirs) {
+      const dir = this._dirs[path]
+      dir.priority = Math.min(dir.priority, priority)
+      return
+    }
+
+    this._dirs[path] = new Dir(path, priority)
+  }
+
+  values () {
+    return Object.values(this._dirs)
+    .sort(
+      ({priority: pa}, {priority: pb}) => pa - pb
+    )
+    .map(({path}) => path)
+  }
+}
+
+const Package = shape(PACKAGE)
+
+const getIncludeDirs = (
+  {
+    proto_dependencies,
+    gaia_path
+  },
+  priority = 0,
+  included = new IncludeDirs(),
+  traversed = Object.create(null)
+) => {
+  for (const dep of proto_dependencies) {
+    if (traversed[dep]) {
+      continue
+    }
+
+    traversed[dep] = true
+
+    const resolved = resolvePackage(gaia_path, dep)
+    const pkg = Package.from({
+      root: resolved
+    })
+
+    getIncludeDirs(pkg, priority + 1, included, traversed)
+  }
+
+  if (priority === 0) {
+    return included.values()
+  }
+
+  // Only add gaia_path for dependencies
+  included.add(gaia_path, priority)
+}
+
 module.exports = {
-  PACKAGE
+  PACKAGE,
+  getIncludeDirs
 }

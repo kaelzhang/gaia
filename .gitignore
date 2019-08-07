@@ -42,7 +42,7 @@ thumbs.db
 .svn
 .CVS
 .idea
-node_modules
+/node_modules
 old/
 *-old/
 *-notrack/
