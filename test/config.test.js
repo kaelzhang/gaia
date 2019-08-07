@@ -65,7 +65,10 @@ const SERVER_CONFIG_CASES = [
         package: 'package-not-found'
       }
     }
-  }]
+  }],
+  ['INVALID_PKG_GAIA', 'err-invalid-pkg-gaia'],
+  ['INVALID_PROTO_DEPS', 'err-invalid-proto-deps'],
+  ['DEP_OUT_RANGE', 'err-dep-out-range']
 ]
 
 SERVER_CONFIG_CASES.forEach(([code, dir, config], i) => {

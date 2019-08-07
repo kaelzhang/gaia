@@ -12,11 +12,14 @@ const {
 } = require('./utils')
 const {error} = require('./error')
 
+const packagePath = root => join(root, 'package.json')
+
 const readPkg = root => {
   let pkg = {}
+  const filepath = packagePath(root)
 
   try {
-    pkg = fs.readJsonSync(join(root, 'package.json'))
+    pkg = fs.readJsonSync(filepath)
   } catch (err) {
     if (err.code === 'ENOTDIR') {
       throw error('PATH_NOT_DIR', root)
@@ -34,7 +37,7 @@ const readPkg = root => {
     if (gaia === UNDEFINED) {
       pkg.gaia = {}
     } else {
-      throw error('INVALID_PKG_GAIA', gaia)
+      throw error('INVALID_PKG_GAIA', filepath, gaia)
     }
   }
 
@@ -97,7 +100,7 @@ const PACKAGE = {
       const deps = access(pkg, 'gaia.protoDependencies', [])
 
       if (!isArrayString(deps)) {
-        throw error('INVALID_PROTO_DEPS', deps)
+        throw error('INVALID_PROTO_DEPS', packagePath(root), deps)
       }
 
       const {
@@ -106,7 +109,7 @@ const PACKAGE = {
 
       for (const dep of deps) {
         if (!(dep in dependencies)) {
-          throw error('DEP_OUT_RANGE', dep, root)
+          throw error('DEP_OUT_RANGE', dep, packagePath(root))
         }
       }
 
