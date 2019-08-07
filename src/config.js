@@ -14,7 +14,7 @@ const {
   requireModule, resolvePackage, isArrayString, isDirectory
 } = require('./utils')
 const {
-  PACKAGE, getIncludeDirs
+  PACKAGE, getDependencyIncludeDirs
 } = require('./package')
 
 const DEFAULT_LOADER_OPTIONS = {
@@ -86,7 +86,7 @@ const COMMON_SHAPE = {
         const {proto_root} = this.parent
 
         const resolved = resolve(proto_root, p)
-        const includeDirs = getIncludeDirs(pkg)
+        const includeDirs = getDependencyIncludeDirs(pkg)
 
         return {
           path: resolved,

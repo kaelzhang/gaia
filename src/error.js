@@ -34,7 +34,7 @@ E('PLUGIN_PATH_NOT_DIR', 'plugin path not found or not a directory')
 E('PACKAGE_OR_PATH_REQUIRED',
   'either %s.package or %s.path should be speicified')
 
-E('NO_PACKAGE_GAEA_PATH',
+E('NO_PACKAGE_GAIA_PATH',
   `package.json contains no gaia.path in package "%s"${OR_PATH}`)
 
 E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')

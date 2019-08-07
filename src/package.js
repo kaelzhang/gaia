@@ -1,4 +1,4 @@
-const {join} = require('path')
+const {join, dirname} = require('path')
 const access = require('object-access')
 const {isObject, isString} = require('core-util-is')
 const fs = require('fs-extra')
@@ -34,7 +34,7 @@ const readPkg = root => {
     if (gaia === UNDEFINED) {
       pkg.gaia = {}
     } else {
-      throw error('INVALID_PKG_GAEA', gaia)
+      throw error('INVALID_PKG_GAIA', gaia)
     }
   }
 
@@ -95,6 +95,7 @@ const PACKAGE = {
     set () {
       const {pkg, root} = this.parent
       const deps = access(pkg, 'gaia.protoDependencies', [])
+
       if (!isArrayString(deps)) {
         throw error('INVALID_PROTO_DEPS', deps)
       }
@@ -139,6 +140,7 @@ class IncludeDirs {
   values () {
     return Object.values(this._dirs)
     .sort(
+      // Smaller means higher
       ({priority: pa}, {priority: pb}) => pa - pb
     )
     .map(({path}) => path)
@@ -147,7 +149,8 @@ class IncludeDirs {
 
 const Package = shape(PACKAGE)
 
-const getIncludeDirs = (
+// Get extra includeDirs which are the dirname of dependencies
+const getDependencyIncludeDirs = (
   {
     proto_dependencies,
     gaia_path
@@ -163,23 +166,24 @@ const getIncludeDirs = (
 
     traversed[dep] = true
 
+    // dep: foo -> /path/to/node_modules/foo
     const resolved = resolvePackage(gaia_path, dep)
+    // add: /path/to/node_modules
+    included.add(dirname(resolved), priority)
+
     const pkg = Package.from({
       root: resolved
     })
 
-    getIncludeDirs(pkg, priority + 1, included, traversed)
+    getDependencyIncludeDirs(pkg, priority + 1, included, traversed)
   }
 
   if (priority === 0) {
     return included.values()
   }
-
-  // Only add gaia_path for dependencies
-  included.add(gaia_path, priority)
 }
 
 module.exports = {
   PACKAGE,
-  getIncludeDirs
+  getDependencyIncludeDirs
 }
