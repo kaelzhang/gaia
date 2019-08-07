@@ -18,7 +18,22 @@ For now, `gaia` only supports [**proto3**](https://developers.google.com/protoco
 $ npm i gaia
 ```
 
-## APIs
+## Table of Contents
+
+- [APIs](#apis)
+  - [Client](#new-clientroot-clientconfig)
+  - [Server](#new-serverroot-serverconfig)
+- [How gaia makes `.proto` files sharable and portable?](#how-gaia-makes-proto-files-sharable-and-portable)
+  - [Create the client of `hello`](#create-the-client-of-hello)
+  - [Import `.proto` files from `hello`](#import-proto-files-from-hello)
+  - [More about `includeDirs`](#more-about-includedirs)
+- [How to Write a `gaia` Server](#how-to-write-a-gaia-server)
+  - [Packages and name resolution](#packages-and-name-resolution)
+  - [Reusing other controllers](#reusing-other-controllers)
+  - [Using external services](#using-external-services)
+  - [Using plugins](#using-plugins)
+
+## Synopsis
 
 ```js
 const {
@@ -141,7 +156,7 @@ const g = gaia({
 
 Start the gaia server.
 
-## How `gaia` makes proto files sharable and portable?
+## How `gaia` makes `.proto` files sharable and portable?
 
 `gaia` takes full advantage of npm packages to share proto files.
 
