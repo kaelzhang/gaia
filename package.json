@@ -1,6 +1,6 @@
 {
   "name": "gaia",
-  "version": "6.1.0",
+  "version": "1.0.0",
   "description": "Gaia, the very framework to make gRPC services",
   "main": "src/index.js",
   "scripts": {
