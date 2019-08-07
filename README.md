@@ -10,6 +10,8 @@ Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines 
 - **Eggjs compatible plugins** `gaia` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
 - **Restful API service made easy** `gaia` provides a convenient way to define restful API routings upon the existing gRPC services.
 
+For now, `gaia` only supports [**proto3**](https://developers.google.com/protocol-buffers/docs/proto3).
+
 ## Install
 
 ```sh
@@ -67,9 +69,9 @@ interface BaseConfig {
   // - collected, serialized and transmitted to the clients.
   // - or deseriialized from server
   // `error_props` defaults to `['code', 'message']`
-  error_props: Array<string>
+  error_props?: Array<string> = ['code', 'message']
   // specifies where to load proto files.
-  proto_root: string
+  proto_root?: string = 'proto'
   // Proto filenames inside `proto_root`.
   // If not specified, gaia will use all `.proto` files inside `proto_root`.
   protos?: Array<string>
@@ -89,8 +91,10 @@ Connects to the gRPC server and returns the service methods
 
 ```ts
 interface ServerConfig extends BaseConfig {
-  plugins: Array<Plugin>
-  services: Services
+  // Defines where to load controllers
+  controller_root?: string = 'controller'
+  plugins?: Array<Plugin>
+  services?: Services
 }
 
 interface Package {
@@ -204,7 +208,7 @@ const {Greeter} = new Client('/path/to/foo/node_modules/hello').connect('localho
 
 Since project `foo`, as we introduced above, has a dependency `hello`, we could import `.proto` files from package `hello`.
 
-/path/to/foo/proto/foo.proto:
+in `/path/to/foo/proto/foo.proto`:
 
 ```protobuf
 syntax = "proto3";
@@ -225,7 +229,8 @@ In order to do that, we need to declare that `hello` is a `gaia` dependency of `
 {
   "name": "foo",
   "gaia": {
-    "dependencies": [
+    // So that we could import .proto files from package `hello`
+    "protoDependencies": [
       // We have to add "hello" here.
       "hello"
     ]
@@ -241,11 +246,39 @@ And `gaia` will manage the [`--proto_path`](https://developers.google.com/protoc
 
 ### More about `includeDirs`
 
-## How to write a `gaia` server
+`gaia` recursively parses the `protoDependencies` of project `foo`, and its `protoDependency`'s `protoDependencies` to generate the `options.includeDirs` option for [`@grpc/proto-loader`](https://www.npmjs.com/package/@grpc/proto-loader)
 
-## Configurations
+## How to Write a `gaia` Server
 
-A `"gaia"` field is not always required in `package.json`, we could
+Take the project `hello` which introduced above for example.
+
+Since we define a `Greeter` service, we must implement the corresponding controller by ourselves.
+
+Service controllers should be defined in directory `/path/to/hello/controller` which can be changed with by config `controller_root`.
+
+We must provide a `Greeter.js` in that directory.
+
+```
+/path/to/hello/
+  |-- controller/
+  |            |-- Greeter.js
+```
+
+in [`Greeter.js`](example/hello/controller/Greeter.js), there should be an async/sync method named `SayHello` in `exports` because we defined a `SayHello` rpc method in service `Greeter`
+
+```js
+exports.sayHello = ({name}) => ({
+  message: `Hello ${name}`
+})
+```
+
+### Packages and name resolution
+
+### Reusing other controllers
+
+### Using external services
+
+### Using plugins
 
 ## License
 
