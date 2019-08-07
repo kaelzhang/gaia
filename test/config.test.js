@@ -73,7 +73,7 @@ SERVER_CONFIG_CASES.forEach(([code, dir, config], i) => {
     `serverConfig: ${i}: ${code}`)
 })
 
-test.only('config servie package', t => {
+test('config servie package', t => {
   const {config} = serverConfig(fixture('empty'), {
     services: {
       foo: {

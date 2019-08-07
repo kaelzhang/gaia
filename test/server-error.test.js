@@ -1,5 +1,5 @@
 const {
-  test, check, fixture, example
+  check, fixture, example
 } = require('./check')
 const {
   Server

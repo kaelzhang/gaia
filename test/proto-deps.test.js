@@ -8,6 +8,9 @@ const {
   Server, Client
 } = require('../src')
 
+// `proto-deps` has a deep dependency tree,
+// as long as a deep .proto import tree
+// Gaia should make it right
 test('proto dependencies', async t => {
   const hello_root = fixture('proto-deps')
   new Server(hello_root).listen(50053)
