@@ -289,11 +289,45 @@ exports.sayHello = ({name}) => ({
 
 ### Packages and name resolution
 
-### Reusing other controllers
+First the innermost package scope is searched, then the next-innermost, and so on, and at last the service name.
 
-### Using external services
+Assume that we have the following protocol buffer.
 
-### Using plugins
+```proto
+package foo.bar;
+
+service Baz {
+  rpc Quux (Req) returns (Res) {}
+}
+```
+
+Then in directory `controller_root`, we need to create a JavaScript file `foo/bar/Baz.js` whose `exports` has a `Quux` method.
+
+### `this` object of the controller methods
+
+There are several properties could be access by `this` object of the controller methods.
+
+#### Reusing other controllers
+
+We could access other controller methods by
+
+```js
+this.controller[namespace0][namespace1][serviceName][methodName]
+```
+
+For example, we could access the `Quux` method by
+
+```js
+exports.OtherMethodsOfSomeService = async function (request) {
+  const data = await this.controller.foo.bar.Baz.Quux(request)
+  // ...
+  return something
+}
+```
+
+#### Using external services
+
+#### Using plugins
 
 ## License
 
