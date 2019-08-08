@@ -29,6 +29,7 @@ $ npm i gaia
   - [More about `includeDirs`](#more-about-includedirs)
 - [How to Write a `gaia` Server](#how-to-write-a-gaia-server)
   - [Packages and name resolution](#packages-and-name-resolution)
+  - [`this` object of the controller methods](#this-object-of-the-controller-methods)
   - [Reusing other controllers](#reusing-other-controllers)
   - [Using external services](#using-external-services)
   - [Using plugins](#using-plugins)
@@ -312,7 +313,7 @@ There are several properties could be access by `this` object of the controller 
 We could access other controller methods by
 
 ```js
-this.controller[namespace0][namespace1][serviceName][methodName]
+this.controller[namespace0][namespace1]...[serviceName][methodName]
 ```
 
 For example, we could access the `Quux` method by
