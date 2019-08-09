@@ -30,9 +30,9 @@ $ npm i gaia
 - [How to Write a `gaia` Server](#how-to-write-a-gaia-server)
   - [Packages and name resolution](#packages-and-name-resolution)
   - [`this` object of the controller methods](#this-object-of-the-controller-methods)
-  - [Reusing other controllers](#reusing-other-controllers)
-  - [Using external services](#using-external-services)
-  - [Using plugins](#using-plugins)
+    - [Reusing other controllers](#reusing-other-controllers)
+    - [Using external services](#using-external-services)
+    - [Using plugins](#using-plugins)
 
 ## Synopsis
 
@@ -328,7 +328,35 @@ exports.OtherMethodsOfSomeService = async function (request) {
 
 #### Using external services
 
+If we provide `serverConfig.services` for server
+
+```js
+new Server('/path/to/service/foo', {
+  ...otherConfig,
+  services: {
+    hello: {
+      // 'hello' is a gaia server
+      package: 'hello'
+    }
+  }
+})
+.listen(port)
+```
+
+Then, client of the service `'hello'` could be accessed from the service controller of foo by:
+
+```js
+exports.Quux = async function ({name}) {
+  const {message} = await this.service.hello.SayHello({name})
+  return {
+    property: message
+  }
+}
+```
+
 #### Using plugins
+
+
 
 ## License
 
