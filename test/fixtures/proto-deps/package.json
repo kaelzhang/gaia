@@ -1,0 +1,11 @@
+{
+  "name": "proto-deps",
+  "gaia": {
+    "protoDependencies": [
+      "foo"
+    ]
+  },
+  "dependencies": {
+    "foo": "^1.0.0"
+  }
+}

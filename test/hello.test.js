@@ -1,5 +1,4 @@
 const test = require('ava')
-const path = require('path')
 const delay = require('delay')
 
 const {
@@ -67,7 +66,7 @@ const throws = async (t, fn, message) => {
       return
     }
 
-    throw new Error('gaea test: invalid message')
+    throw new Error('gaia test: invalid message')
   }
 
   t.fail('should throw')

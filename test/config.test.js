@@ -17,7 +17,7 @@ const SERVER_CONFIG_CASES = [
   ['PATH_NOT_DIR', 'err-not-dir'],
   ['ERR_READ_PKG', 'err-read-pkg'],
   ['PATH_NO_ACCESSIBLE', 'err-path-no-access'],
-  ['PATH_NOT_DIR', 'err-gaea-path-not-dir'],
+  ['PATH_NOT_DIR', 'err-gaia-path-not-dir'],
 
   ['ERR_LOAD_PROTO', 'err-load-proto'],
   ['INVALID_ERROR_PROPS', 'empty', {
@@ -65,7 +65,10 @@ const SERVER_CONFIG_CASES = [
         package: 'package-not-found'
       }
     }
-  }]
+  }],
+  ['INVALID_PKG_GAIA', 'err-invalid-pkg-gaia'],
+  ['INVALID_PROTO_DEPS', 'err-invalid-proto-deps'],
+  ['DEP_OUT_RANGE', 'err-dep-out-range']
 ]
 
 SERVER_CONFIG_CASES.forEach(([code, dir, config], i) => {
@@ -73,7 +76,7 @@ SERVER_CONFIG_CASES.forEach(([code, dir, config], i) => {
     `serverConfig: ${i}: ${code}`)
 })
 
-test.only('config servie package', t => {
+test('config servie package', t => {
   const {config} = serverConfig(fixture('empty'), {
     services: {
       foo: {
@@ -84,6 +87,6 @@ test.only('config servie package', t => {
   })
 
   const path = join(__dirname, '..', 'node_modules', 'egg-bog')
-console.log(config)
+
   t.is(config.services.foo.path, path)
 })

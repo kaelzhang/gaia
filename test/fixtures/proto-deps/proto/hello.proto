@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "foo/proto/hello.proto";
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}

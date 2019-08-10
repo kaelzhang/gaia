@@ -1,32 +1,50 @@
-[![Build Status](https://travis-ci.org/kaelzhang/gaea.svg?branch=master)](https://travis-ci.org/kaelzhang/gaea)
-[![Coverage](https://codecov.io/gh/kaelzhang/gaea/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/gaea)
+[![Build Status](https://travis-ci.org/kaelzhang/gaia.svg?branch=master)](https://travis-ci.org/kaelzhang/gaia)
+[![Coverage](https://codecov.io/gh/kaelzhang/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/gaia)
 
-# gaea
+# gaia
 
-Gaea, the very framework to make [gRPC](https://grpc.io) services. Gaea defines the way we write gRPC services.
+Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines the way we write gRPC services.
 
-- **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaea` will do it for you.
-- **Manage `.proto` files** `gaea` allows us to share proto files between server and clients. `gaea` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
-- **Eggjs compatible plugins** `gaea` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
-- **Restful API service made easy** `gaea` provides a convenient way to define restful API routings upon the existing gRPC services.
+- **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaia` will do it for you.
+- **Manage `.proto` files** `gaia` allows us to share proto files between server and clients. `gaia` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
+- **Eggjs compatible plugins** `gaia` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
+- **Restful API service made easy** `gaia` provides a convenient way to define restful API routings upon the existing gRPC services.
+
+For now, `gaia` only supports [**proto3**](https://developers.google.com/protocol-buffers/docs/proto3).
 
 ## Install
 
 ```sh
-$ npm i gaea
+$ npm i gaia
 ```
 
-## APIs
+## Table of Contents
+
+- [APIs](#apis)
+  - [Client](#new-clientroot-clientconfig)
+  - [Server](#new-serverroot-serverconfig)
+- [How gaia makes `.proto` files sharable and portable?](#how-gaia-makes-proto-files-sharable-and-portable)
+  - [Create the client of `hello`](#create-the-client-of-hello)
+  - [Import `.proto` files from `hello`](#import-proto-files-from-hello)
+  - [More about `includeDirs`](#more-about-includedirs)
+- [How to Write a `gaia` Server](#how-to-write-a-gaia-server)
+  - [Packages and name resolution](#packages-and-name-resolution)
+  - [`this` object of the controller methods](#this-object-of-the-controller-methods)
+    - [Reusing other controllers](#reusing-other-controllers)
+    - [Using external services](#using-external-services)
+    - [Using plugins](#using-plugins)
+
+## Synopsis
 
 ```js
 const {
   Server, Client
-} = require('gaea')
+} = require('gaia')
 
 const root = path.join(__dirname, 'example')
 ```
 
-To make better understanding the usage of `gaea`, the example below is based on the demo in the [`example/hello`](https://github.com/kaelzhang/gaea/tree/master/example/hello) directory.
+To make better understanding the usage of `gaia`, the example below is based on the demo in the [`example/hello`](https://github.com/kaelzhang/gaia/tree/master/example/hello) directory.
 
 Start server:
 
@@ -56,22 +74,22 @@ run()
 
 ## new Client(root, clientConfig?)
 
-Creates the gaea client.
+Creates the gaia client.
 
 - **root** `path` the root path to load the client from
-- **clientConfig?** `BaseConfig` client configuration. If not specified, `gaea` will load configuration from `${root}/config.js`
+- **clientConfig?** `BaseConfig` client configuration. If not specified, `gaia` will load configuration from `${root}/config.js`
 
 ```ts
 interface BaseConfig {
-  // Tells `gaea` which properties of error should be
+  // Tells `gaia` which properties of error should be
   // - collected, serialized and transmitted to the clients.
   // - or deseriialized from server
   // `error_props` defaults to `['code', 'message']`
-  error_props: Array<string>
+  error_props?: Array<string> = ['code', 'message']
   // specifies where to load proto files.
-  proto_root: string
+  proto_root?: string = 'proto'
   // Proto filenames inside `proto_root`.
-  // If not specified, gaea will use all `.proto` files inside `proto_root`.
+  // If not specified, gaia will use all `.proto` files inside `proto_root`.
   protos?: Array<string>
 }
 ```
@@ -85,12 +103,14 @@ Connects to the gRPC server and returns the service methods
 ## new Server(root, serverConfig?)
 
 - **root** `path` the root path to load the server from
-- **serverConfig?** `ServerConfig` server configurations. If not specified, `gaea` will load configuration from `${root}/config.js`
+- **serverConfig?** `ServerConfig` server configurations. If not specified, `gaia` will load configuration from `${root}/config.js`
 
 ```ts
 interface ServerConfig extends BaseConfig {
-  plugins: Array<Plugin>
-  services: Services
+  // Defines where to load controllers
+  controller_root?: string = 'controller'
+  plugins?: Array<Plugin>
+  services?: Services
 }
 
 interface Package {
@@ -118,8 +138,8 @@ interface Services {
 ```
 
 ```js
-const g = gaea({
-  // if the server throws an `error`, gaea will collect
+const g = gaia({
+  // if the server throws an `error`, gaia will collect
   // - `error.code`,
   // - `error.message`
   // - `error.stack`,
@@ -135,13 +155,13 @@ const g = gaea({
 
 - **port** `number` the port which gRPC server will listen to.
 
-Start the gaea server.
+Start the gaia server.
 
-## How `gaea` makes proto files sharable and portable?
+## How `gaia` makes `.proto` files sharable and portable?
 
-`gaea` takes full advantage of npm packages to share proto files.
+`gaia` takes full advantage of npm packages to share proto files.
 
-A minimun `gaea` service portable, as well as service `hello` or package `hello`, could be:
+A minimun `gaia` service portable, as well as service `hello` or package `hello`, could be:
 
 ```
 /path/to/hello/
@@ -173,8 +193,8 @@ package.json
 ```js
 {
   "name": "hello",
-  // We need a "gaea" field to tell that it is a gaea portable
-  "gaea": {}
+  // We need a "gaia" field to tell that it is a gaia portable
+  "gaia": {}
 }
 ```
 
@@ -196,7 +216,7 @@ Assume that we have a new project `foo`, and we `npm install hello`.
 Then if the `hello` service is already running on port `8000`, we could create a hello client by following lines:
 
 ```js
-const {Client} = require('gaea')
+const {Client} = require('gaia')
 const {Greeter} = new Client('/path/to/foo/node_modules/hello').connect('localhost:8000')
 ```
 
@@ -204,7 +224,7 @@ const {Greeter} = new Client('/path/to/foo/node_modules/hello').connect('localho
 
 Since project `foo`, as we introduced above, has a dependency `hello`, we could import `.proto` files from package `hello`.
 
-/path/to/foo/proto/foo.proto:
+in `/path/to/foo/proto/foo.proto`:
 
 ```protobuf
 syntax = "proto3";
@@ -219,13 +239,14 @@ service FooGreeter {
 }
 ```
 
-In order to do that, we need to declare that `hello` is a `gaea` dependency of `foo` by adding some fields in package.json:
+In order to do that, we need to declare that `hello` is a `gaia` dependency of `foo` by adding some fields in package.json:
 
 ```js
 {
   "name": "foo",
-  "gaea": {
-    "dependencies": [
+  "gaia": {
+    // So that we could import .proto files from package `hello`
+    "protoDependencies": [
       // We have to add "hello" here.
       "hello"
     ]
@@ -237,24 +258,106 @@ In order to do that, we need to declare that `hello` is a `gaea` dependency of `
 }
 ```
 
-And `gaea` will manage the [`--proto_path`](https://developers.google.com/protocol-buffers/docs/proto3#importing-definitions)s ([includeDirs](https://www.npmjs.com/package/@grpc/proto-loader)) for you, so that gRPC Protobuf Loader will know where to search and import `.proto` files
+And `gaia` will manage the [`--proto_path`](https://developers.google.com/protocol-buffers/docs/proto3#importing-definitions)s ([includeDirs](https://www.npmjs.com/package/@grpc/proto-loader)) for you, so that gRPC Protobuf Loader will know where to search and import `.proto` files
 
 ### More about `includeDirs`
 
-## How to write a `gaea` server
+`gaia` recursively parses the `protoDependencies` of project `foo`, and its `protoDependency`'s `protoDependencies` to generate the `options.includeDirs` option for [`@grpc/proto-loader`](https://www.npmjs.com/package/@grpc/proto-loader)
 
-## Configurations
+## How to Write a `gaia` Server
 
-A `"gaea"` field is not always required in `package.json`, we could
+Take the project `hello` which introduced above for example.
+
+Since we define a `Greeter` service in `hello.proto`, we must implement the corresponding controller by ourselves.
+
+Service controllers should be defined in directory `/path/to/hello/controller` which can be changed with by config `controller_root`.
+
+We must provide a `Greeter.js` in that directory.
+
+```
+/path/to/hello/
+  |-- controller/
+  |            |-- Greeter.js
+```
+
+in [`Greeter.js`](example/hello/controller/Greeter.js), there should be an async/sync method named `SayHello` in `exports` because we defined a `SayHello` rpc method in service `Greeter`
+
+```js
+exports.sayHello = ({name}) => ({
+  message: `Hello ${name}`
+})
+```
+
+### Packages and name resolution
+
+First the innermost package scope is searched, then the next-innermost, and so on, and at last the service name.
+
+Assume that we have the following protocol buffer.
+
+```proto
+package foo.bar;
+
+service Baz {
+  rpc Quux (Req) returns (Res) {}
+}
+```
+
+Then in directory `controller_root`, we need to create a JavaScript file `foo/bar/Baz.js` whose `exports` has a `Quux` method.
+
+### `this` object of the controller methods
+
+There are several properties could be access by `this` object of the controller methods.
+
+#### Reusing other controllers
+
+We could access other controller methods by
+
+```js
+this.controller[namespace0][namespace1]...[serviceName][methodName]
+```
+
+For example, we could access the `Quux` method by
+
+```js
+exports.OtherMethodsOfSomeService = async function (request) {
+  const data = await this.controller.foo.bar.Baz.Quux(request)
+  // ...
+  return something
+}
+```
+
+#### Using external services
+
+If we provide `serverConfig.services` for server
+
+```js
+new Server('/path/to/service/foo', {
+  ...otherConfig,
+  services: {
+    hello: {
+      // 'hello' is a gaia server
+      package: 'hello'
+    }
+  }
+})
+.listen(port)
+```
+
+Then, client of the service `'hello'` could be accessed from the service controller of foo by:
+
+```js
+exports.Quux = async function ({name}) {
+  const {message} = await this.service.hello.SayHello({name})
+  return {
+    property: message
+  }
+}
+```
+
+#### Using plugins
+
+
 
 ## License
 
 [MIT](LICENSE)
-
-If we have a `foo` package in a proto file, and inside the `foo` package there is a `Bar` service, then we must put a `foo/Bar.js` file in `/path/to/example/service/`.
-
-And if there is a `Baz` rpc method in the `Bar` service, we must set a `Baz` function as one of the exports of the `foo/Bar.js`. The `Baz` function might have one argument(or no arguments) which accepts the data from the client.
-
-Or there will be errors.
-
-Besides, if there is a `Quux` service which not in any package, we should just put a `Quux.js` file in `/path/to/example/service/`.

@@ -12,7 +12,7 @@ class Server {
   constructor (rawRoot, rawConfig) {
     const {
       config,
-      gaea_path: root
+      gaia_path: root
     } = serverConfig(rawRoot, rawConfig)
 
     this._server = new grpc.Server()

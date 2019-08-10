@@ -12,7 +12,7 @@ module.exports = {
       }
     }
   ],
-  // gaea services
+  // gaia services
   services: {
     hello: {
       path: join(__dirname, '..', '..', 'hello'),

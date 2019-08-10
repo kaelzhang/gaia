@@ -1,8 +1,8 @@
 const grpc = require('grpc')
 const {isString} = require('core-util-is')
 
-// `KEY_GAEA` should not contains special characters, such as `:`
-const KEY_GAEA = '__is_gaea'
+// `KEY_GAIA` should not contains special characters, such as `:`
+const KEY_GAIA = '__is_gaia'
 const KEY_METADATA = 'metadata'
 
 // Ref
@@ -23,7 +23,7 @@ const set = (metadata, key, value) => {
 
 const wrap = (err, props) => {
   const metadata = new grpc.Metadata()
-  set(metadata, KEY_GAEA, true)
+  set(metadata, KEY_GAIA, true)
 
   props.forEach(prop => {
     const value = err[prop]
@@ -46,9 +46,9 @@ const unwrap = (err, props) => {
     return err
   }
 
-  const is_gaea = get(metadata, KEY_GAEA)
+  const is_gaia = get(metadata, KEY_GAIA)
 
-  if (!is_gaea) {
+  if (!is_gaia) {
     return err
   }
 

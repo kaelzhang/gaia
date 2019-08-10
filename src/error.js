@@ -1,7 +1,7 @@
 const {Errors} = require('err-object')
 
 const {E, TE, error} = new Errors({
-  messagePrefix: '[gaea] '
+  messagePrefix: '[gaia] '
 })
 
 TE('INVALID_ROOT', 'root must be a string')
@@ -10,9 +10,18 @@ TE('INVALID_PORT', 'port must be a number')
 
 E('PATH_NO_ACCESSIBLE', 'path "%s" is not accessible, reason: %s')
 
+E('PATH_NOT_DIR', 'path "%s" is not a directory')
+
 E('ERR_READ_PKG', 'fails to read package.json in "%s", reason: %s')
 
-E('PATH_NOT_DIR', 'path "%s" is not a directory')
+TE('INVALID_PKG_GAIA', 'field "gaia" of "%s" should be either undefined or an object')
+
+TE('INVALID_PROTO_DEPS',
+  'field "gaia.protoDependencies" of "%s" should be an array of strings')
+
+E('DEP_OUT_RANGE',
+  '"%s" of field "gaia.protoDependencies" should be one of the "dependencies" in "%s"',
+  RangeError)
 
 TE('INVALID_PROTO_ROOT', 'config.proto_root must be a string')
 
@@ -28,14 +37,14 @@ const OR_PATH = ', or service.path should be specified'
 
 E('MODULE_NOT_FOUND', 'fails to resolve package "%s"')
 
-E('SERVICE_PATH_NOT_DIR', 'service path not found or not a directory')
-E('PLUGIN_PATH_NOT_DIR', 'plugin path not found or not a directory')
+E('SERVICE_PATH_NOT_DIR', 'service path "%s" not found or not a directory')
+E('PLUGIN_PATH_NOT_DIR', 'plugin path "%s" not found or not a directory')
 
 E('PACKAGE_OR_PATH_REQUIRED',
-  'either %s.package or %s.path should be speicified')
+  'either %s.package or .path should be speicified')
 
-E('NO_PACKAGE_GAEA_PATH',
-  `package.json contains no gaea.path in package "%s"${OR_PATH}`)
+E('NO_PACKAGE_GAIA_PATH',
+  `package.json contains no gaia.path in package "%s"${OR_PATH}`)
 
 E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
 
