@@ -192,9 +192,7 @@ package.json
 
 ```js
 {
-  "name": "hello",
-  // We need a "gaia" field to tell that it is a gaia portable
-  "gaia": {}
+  "name": "hello"
 }
 ```
 
