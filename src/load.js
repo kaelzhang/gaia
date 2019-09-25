@@ -63,7 +63,7 @@ class IncludeDirs {
 const getDependencyIncludeDirs = (
   {
     proto_dependencies,
-    gaia_path
+    root
   },
   priority = 0,
   included = new IncludeDirs(),
@@ -77,7 +77,7 @@ const getDependencyIncludeDirs = (
     traversed[dep] = true
 
     // dep: foo -> /path/to/node_modules/foo
-    const resolved = resolvePackage(gaia_path, dep)
+    const resolved = resolvePackage(root, dep)
     // add: /path/to/node_modules
     included.add(dirname(resolved), priority)
 

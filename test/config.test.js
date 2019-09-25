@@ -22,8 +22,6 @@ const SERVER_CONFIG_CASES = [
   ['PATH_NOT_DIR', 'err-not-dir'],
   ['ERR_READ_PKG', 'err-read-pkg'],
   ['INVALID_GAIA', 'err-invalid-pkg-gaia'],
-  ['PATH_NO_ACCESSIBLE', 'err-path-no-access'],
-  ['PATH_NOT_DIR', 'err-gaia-path-not-dir'],
   ['ERR_LOAD_PROTO', 'err-load-proto', loadProto],
   // ['INVALID_ERROR_PROPS', 'empty', {
   //   error_props: 1

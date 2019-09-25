@@ -5,12 +5,8 @@ const {sync} = require('globby')
 
 const {shape} = require('./skema')
 const {RETURN} = require('./constants')
-const {
-  isArrayString, isDirectory, define
-} = require('./utils')
+const {isArrayString} = require('./utils')
 const {error} = require('./error')
-
-const IS_DEFAULT_PROTO_PATH = Symbol('default-proto-path')
 
 const packagePath = root => join(root, 'package.json')
 
@@ -70,7 +66,6 @@ const PackageShape = shape({
       }
 
       Object.assign(this.rawParent, {
-        gaia_path: gaia.path,
         proto_dependencies: gaia.protoDependencies,
         proto_path: gaia.protoPath,
         protos: gaia.protos,
@@ -78,32 +73,6 @@ const PackageShape = shape({
       })
 
       return gaia
-    }
-  },
-
-  // The gaia path could be other than the root path of a npm package
-  // by specifying `package.gaia.path`
-  gaia_path: {
-    default: RETURN,
-    set (path) {
-      const {root} = this.parent
-
-      const gaia_path = path
-        // We only allow relative `path` here, so just `path.join`
-        ? join(root, path)
-        : root
-
-      try {
-        fs.accessSync(gaia_path, fs.constants.R_OK)
-      } catch (err) {
-        throw error('PATH_NO_ACCESSIBLE', gaia_path, err.stack)
-      }
-
-      if (!isDirectory(gaia_path)) {
-        throw error('PATH_NOT_DIR', gaia_path)
-      }
-
-      return gaia_path
     }
   },
 
@@ -136,7 +105,6 @@ const PackageShape = shape({
   // .proto files
   proto_path: {
     default () {
-      define(this.parent, IS_DEFAULT_PROTO_PATH, true)
       return 'proto'
     },
     set (path) {

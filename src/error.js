@@ -8,8 +8,6 @@ TE('INVALID_ROOT', 'root must be a string')
 
 TE('INVALID_PORT', 'port must be a number')
 
-E('PATH_NO_ACCESSIBLE', 'path "%s" is not accessible, reason: %s')
-
 E('PATH_NOT_DIR', 'path "%s" is not a directory')
 
 E('ERR_READ_PKG', 'fails to read package.json in "%s", reason: %s')

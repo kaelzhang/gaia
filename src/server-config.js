@@ -28,13 +28,13 @@ const TypePackage = type => ({
     return !this.parent.path
   },
   default () {},
-  set (package_name, gaia_path) {
+  set (package_name, root) {
     if (!package_name) {
       throw error('PACKAGE_OR_PATH_REQUIRED', type)
     }
 
     // We don't actually use property `package`
-    this.parent.path = resolvePackage(gaia_path, package_name)
+    this.parent.path = resolvePackage(root, package_name)
   }
 })
 
@@ -65,8 +65,8 @@ const Services = objectOf(Service)
 
 const ServerConfigShape = shape({
   controller_root: {
-    default (gaia_path) {
-      return resolve(gaia_path, 'controller')
+    default (root) {
+      return resolve(root, 'controller')
     },
 
     validate (value) {
@@ -104,9 +104,9 @@ const readConfig = root => {
 }
 
 module.exports = (pkg, serverConfig) => {
-  const {gaia_path} = pkg
+  const {root} = pkg
 
-  serverConfig = serverConfig || readConfig(gaia_path) || {}
+  serverConfig = serverConfig || readConfig(root) || {}
 
-  return ServerConfigShape.from(serverConfig, [gaia_path])
+  return ServerConfigShape.from(serverConfig, [root])
 }
