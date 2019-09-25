@@ -72,27 +72,11 @@ run()
 
 # APIs
 
-## new Client(root, clientConfig?)
+## new Client(root)
 
 Creates the gaia client.
 
 - **root** `path` the root path to load the client from
-- **clientConfig?** `BaseConfig` client configuration. If not specified, `gaia` will load configuration from `${root}/config.js`
-
-```ts
-interface BaseConfig {
-  // Tells `gaia` which properties of error should be
-  // - collected, serialized and transmitted to the clients.
-  // - or deseriialized from server
-  // `error_props` defaults to `['code', 'message']`
-  error_props?: Array<string> = ['code', 'message']
-  // specifies where to load proto files.
-  proto_root?: string = 'proto'
-  // Proto filenames inside `proto_root`.
-  // If not specified, gaia will use all `.proto` files inside `proto_root`.
-  protos?: Array<string>
-}
-```
 
 ### client.connect(host):
 
@@ -106,7 +90,7 @@ Connects to the gRPC server and returns the service methods
 - **serverConfig?** `ServerConfig` server configurations. If not specified, `gaia` will load configuration from `${root}/config.js`
 
 ```ts
-interface ServerConfig extends BaseConfig {
+interface ServerConfig {
   // Defines where to load controllers
   controller_root?: string = 'controller'
   plugins?: Array<Plugin>
@@ -135,20 +119,6 @@ interface Service extends Package {
 interface Services {
   [name: string]: Service
 }
-```
-
-```js
-const g = gaia({
-  // if the server throws an `error`, gaia will collect
-  // - `error.code`,
-  // - `error.message`
-  // - `error.stack`,
-  // and send them to its clients, while other properties will be omitted.
-  error_props: ['code', 'message', 'stack'],
-  proto_root: '/path/to/example/proto'
-
-  // and read all .proto files
-})
 ```
 
 ### server.listen(port): void
@@ -192,11 +162,42 @@ package.json
 
 ```js
 {
-  "name": "hello"
+  "name": "hello",
+  "gaia": {
+    ...
+  }
+}
+```
+
+The the **optional** field `gaia` follows the schema:
+
+```ts
+interface FieldGaia {
+  // Tells `gaia` which properties of error should be
+  // - collected, serialized and transmitted to the clients.
+  // - or deseriialized from server
+  // `errorProps` defaults to `['code', 'message']`
+
+  // if the server throws an `error`, by default, gaia will collect
+  // - `error.code`,
+  // - `error.message`
+  // and send them to its clients, while other properties will be omitted.
+  errorProps?: Array<string> = ['code', 'message']
+  // Specifies where to load proto files.
+  // `protoPath` should be a relative path to `root`
+  protoPath?: string = 'proto'
+  // Proto filenames inside `protoPath`.
+  // If not specified, gaia will search all `*.proto` files inside `protoPath`.
+  protos?: Array<string> | string = '*.proto'
+
+  // See section #import-proto-files-from-hello below
+  protoDependencies?: Array<string> = []
 }
 ```
 
 Apparently, package `hello` has everything we need to create a client agent for service `hello`.
+
+And package `hello` is language-independent which only contains proto files and client configurations.
 
 ### Create the client of `hello`
 
