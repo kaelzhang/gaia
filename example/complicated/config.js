@@ -14,7 +14,7 @@ module.exports = {
   // gaia services
   services: {
     hello: {
-      path: join(__dirname, '..', '..', 'hello'),
+      path: join(__dirname, '..', 'hello'),
       host: 'localhost:50051'
     }
   }

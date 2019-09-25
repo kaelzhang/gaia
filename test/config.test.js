@@ -23,21 +23,19 @@ const SERVER_CONFIG_CASES = [
   ['ERR_READ_PKG', 'err-read-pkg'],
   ['INVALID_GAIA', 'err-invalid-pkg-gaia'],
   ['ERR_LOAD_PROTO', 'err-load-proto', loadProto],
-  // ['INVALID_ERROR_PROPS', 'empty', {
-  //   error_props: 1
-  // }],
-  // ['EMPTY_ERROR_PROPS', 'empty', {
-  //   error_props: []
-  // }],
-  // ['INVALID_PROTO_ROOT', 'empty', {
-  //   proto_root: 1
-  // }],
+  ['INVALID_PROTOS', 'err-invalid-protos', read],
+  ['INVALID_ERROR_PROPS', 'err-invalid-error-props', read],
+  ['EMPTY_ERROR_PROPS', 'err-empty-error-props', read],
+  ['INVALID_PROTO_PATH', 'err-invalid-proto-path', read],
   ['PLUGIN_PATH_NOT_DIR', 'empty', serverConfig, {
     plugins: [
       {
         path: fixture('empty', 'not-exists')
       }
     ]
+  }],
+  ['INVALID_CONTROLLER_ROOT', 'empty', serverConfig, {
+    controller_root: 1
   }],
   ['PACKAGE_OR_PATH_REQUIRED', 'empty', serverConfig, {
     plugins: [{}]
