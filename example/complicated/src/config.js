@@ -1,8 +1,6 @@
 const {join} = require('path')
 
 module.exports = {
-  error_props: ['code', 'message', 'stack'],
-  proto_root: join(__dirname, 'proto'),
   plugins: [
     {
       // Eggjs compatible plugin, installed in package.json

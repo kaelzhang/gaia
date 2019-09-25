@@ -14,7 +14,10 @@ E('PATH_NOT_DIR', 'path "%s" is not a directory')
 
 E('ERR_READ_PKG', 'fails to read package.json in "%s", reason: %s')
 
-TE('INVALID_PKG_GAIA', 'field "gaia" of "%s" should be either undefined or an object')
+TE('INVALID_GAIA', 'field "gaia" of "%s" should be either undefined or an object')
+
+TE('INVALID_PROTOS',
+  'field "gaia.protos" of "%s" should be a string or an array of strings')
 
 TE('INVALID_PROTO_DEPS',
   'field "gaia.protoDependencies" of "%s" should be an array of strings')
@@ -22,8 +25,6 @@ TE('INVALID_PROTO_DEPS',
 E('DEP_OUT_RANGE',
   '"%s" of field "gaia.protoDependencies" should be one of the "dependencies" in "%s"',
   RangeError)
-
-TE('INVALID_PROTO_ROOT', 'config.proto_root must be a string')
 
 TE('INVALID_CONTROLLER_ROOT', 'config.controller_root must be a string')
 

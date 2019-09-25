@@ -8,10 +8,9 @@ const {
   requireModule,
   define
 } = require('./utils')
-const {
-  CONFIG, CONTEXT
-} = require('./constants')
+const {CONFIG, CONTEXT} = require('./constants')
 const {error} = require('./error')
+const load = require('./load')
 
 const STR_DOT = '.'
 
@@ -30,13 +29,13 @@ const wrapServerMethod = (method, error_props, context) =>
 class Loader {
   constructor ({
     app,
-    root,
     config,
+    pkg,
     server
   }) {
     this._app = app
     this._context = this._app[CONTEXT]
-    this._root = root
+    this._pkg = pkg
     this._config = config
     this._server = server
   }
@@ -93,7 +92,7 @@ class Loader {
       methods
     } = this._getServiceControllerMethods(package_name)
 
-    const {error_props} = this._config
+    const {error_props} = this._pkg
 
     const wrapped = {}
 
@@ -113,9 +112,7 @@ class Loader {
   }
 
   loadControllers () {
-    const {protos} = this._config
-
-    iterateProtos(protos, ({
+    iterateProtos(load(this._pkg), ({
       service,
       package_name,
       method_names

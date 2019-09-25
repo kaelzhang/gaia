@@ -1,14 +1,14 @@
-const {join, dirname} = require('path')
-const access = require('object-access')
-const {isObject, isString} = require('core-util-is')
+const {join} = require('path')
+const {isObject, isString, isArray} = require('core-util-is')
 const fs = require('fs-extra')
-const {shape} = require('skema')
+const {sync} = require('globby')
 
+const {shape} = require('./skema')
 const {
-  RETURN, UNDEFINED
+  RETURN
 } = require('./constants')
 const {
-  isArrayString, isDirectory, resolvePackage
+  isArrayString, isDirectory
 } = require('./utils')
 const {error} = require('./error')
 
@@ -30,17 +30,6 @@ const readPkg = root => {
     }
   }
 
-  const {gaia} = pkg
-
-  // Ensures `pkg.gaia`
-  if (!isObject(gaia)) {
-    if (gaia === UNDEFINED) {
-      pkg.gaia = {}
-    } else {
-      throw error('INVALID_PKG_GAIA', filepath, gaia)
-    }
-  }
-
   return pkg
 }
 
@@ -59,7 +48,33 @@ const PACKAGE = {
     default: RETURN,
     // Do not read from config
     set () {
-      return readPkg(this.parent.root)
+      const pkg = readPkg(this.parent.root)
+
+      this.rawParent.gaia = pkg.gaia
+
+      return pkg
+    }
+  },
+
+  gaia: {
+    default () {
+      return {}
+    },
+    set (gaia) {
+      const {root} = this.parent
+
+      if (!isObject(gaia)) {
+        throw error('INVALID_GAIA', packagePath(root), gaia)
+      }
+
+      Object.assign(this.rawParent, {
+        gaia_path: gaia.path,
+        proto_dependencies: gaia.protoDependencies,
+        protos: gaia.protos,
+        error_props: gaia.errorProps
+      })
+
+      return gaia
     }
   },
 
@@ -70,13 +85,12 @@ const PACKAGE = {
   // .proto files
   gaia_path: {
     default: RETURN,
-    set () {
+    set (path) {
       const {root} = this.parent
-      const rel_path = access(this.parent.pkg, 'gaia.path')
 
-      const gaia_path = rel_path
-        // We only allow relative `rel_path` here, so just `path.join`
-        ? join(root, rel_path)
+      const gaia_path = path
+        // We only allow relative `path` here, so just `path.join`
+        ? join(root, path)
         : root
 
       try {
@@ -94,10 +108,11 @@ const PACKAGE = {
   },
 
   proto_dependencies: {
-    default: RETURN,
-    set () {
+    default () {
+      return []
+    },
+    validate (deps) {
       const {pkg, root} = this.parent
-      const deps = access(pkg, 'gaia.protoDependencies', [])
 
       if (!isArrayString(deps)) {
         throw error('INVALID_PROTO_DEPS', packagePath(root), deps)
@@ -113,80 +128,49 @@ const PACKAGE = {
         }
       }
 
-      return deps
+      return true
+    },
+
+    // Globbed paths of proto files
+    protos: {
+      default: ['*.proto'],
+      set (protos) {
+        const {root} = this.parent
+        const patterns = isArray(protos)
+          ? protos
+          : [protos]
+
+        if (!patterns.every(isString)) {
+          throw error('INVALID_PROTOS', packagePath(root), protos)
+        }
+
+        return sync(patterns, {
+          cwd: root
+        })
+      }
+    },
+
+    error_props: {
+      default: ['code', 'message'],
+      validate (props) {
+        if (!isArrayString(props)) {
+          throw error('INVALID_ERROR_PROPS', props)
+        }
+
+        if (props.length === 0) {
+          throw error('EMPTY_ERROR_PROPS')
+        }
+
+        return true
+      }
     }
   }
 }
 
-class Dir {
-  constructor (path, priority) {
-    this.path = path
-    this.priority = priority
-  }
-}
+const PackageShape = shape(PACKAGE)
 
-class IncludeDirs {
-  constructor () {
-    this._dirs = Object.create(null)
-  }
-
-  add (path, priority) {
-    if (path in this._dirs) {
-      const dir = this._dirs[path]
-      dir.priority = Math.min(dir.priority, priority)
-      return
-    }
-
-    this._dirs[path] = new Dir(path, priority)
-  }
-
-  values () {
-    return Object.values(this._dirs)
-    .sort(
-      // Smaller means higher
-      ({priority: pa}, {priority: pb}) => pa - pb
-    )
-    .map(({path}) => path)
-  }
-}
-
-const Package = shape(PACKAGE)
-
-// Get extra includeDirs which are the dirname of dependencies
-const getDependencyIncludeDirs = (
-  {
-    proto_dependencies,
-    gaia_path
-  },
-  priority = 0,
-  included = new IncludeDirs(),
-  traversed = Object.create(null)
-) => {
-  for (const dep of proto_dependencies) {
-    if (traversed[dep]) {
-      continue
-    }
-
-    traversed[dep] = true
-
-    // dep: foo -> /path/to/node_modules/foo
-    const resolved = resolvePackage(gaia_path, dep)
-    // add: /path/to/node_modules
-    included.add(dirname(resolved), priority)
-
-    const pkg = Package.from({
-      root: resolved
-    })
-
-    getDependencyIncludeDirs(pkg, priority + 1, included, traversed)
-  }
-
-  if (priority === 0) {
-    return included.values()
-  }
-}
+const read = root => PackageShape.from({root})
 
 module.exports = {
-  PACKAGE,
-  getDependencyIncludeDirs
+  read
 }
