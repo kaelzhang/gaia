@@ -6,7 +6,6 @@ const {error} = require('./error')
 const {
   requireModule, resolvePackage, isDirectory
 } = require('./utils')
-const {read} = require('./package')
 
 const ensurePath = errorCode => path => {
   const resolved = resolve(path)
@@ -18,6 +17,27 @@ const ensurePath = errorCode => path => {
   return resolved
 }
 
+const TypePath = code => ({
+  optional: true,
+  set: ensurePath(code)
+})
+
+const TypePackage = type => ({
+  enumerable: false,
+  when () {
+    return !this.parent.path
+  },
+  default () {},
+  set (package_name, gaia_path) {
+    if (!package_name) {
+      throw error('PACKAGE_OR_PATH_REQUIRED', type)
+    }
+
+    // We don't actually use property `package`
+    this.parent.path = resolvePackage(gaia_path, package_name)
+  }
+})
+
 const Plugin = shape({
   config: {
     type: 'object',
@@ -26,55 +46,19 @@ const Plugin = shape({
     }
   },
 
-  path: {
-    optional: true,
-    set: ensurePath('PLUGIN_PATH_NOT_DIR')
-  },
-
-  package: {
-    enumerable: false,
-    when () {
-      return !this.parent.path
-    },
-    default () {},
-    set (package_name, gaia_path) {
-      if (!package_name) {
-        throw error('PACKAGE_OR_PATH_REQUIRED', 'plugin')
-      }
-
-      this.parent.path = resolvePackage(gaia_path, package_name)
-    }
-  }
+  path: TypePath('PLUGIN_PATH_NOT_DIR'),
+  package: TypePackage('plugin')
 })
 
 const Plugins = arrayOf(Plugin)
 
 const Service = shape({
-  // The path contains gaia service code
-  path: {
-    optional: true,
-    set: ensurePath('SERVICE_PATH_NOT_DIR')
-  },
-
   host: {
     type: String
   },
 
-  package: {
-    // We don't actually use service.package
-    enumerable: false,
-    when () {
-      return !this.parent.path
-    },
-    default () {},
-    set (package_name, gaia_path) {
-      if (!package_name) {
-        throw error('PACKAGE_OR_PATH_REQUIRED', 'service')
-      }
-
-      this.parent.path = resolvePackage(gaia_path, package_name)
-    }
-  }
+  path: TypePath('SERVICE_PATH_NOT_DIR'),
+  package: TypePackage('service')
 })
 
 const Services = objectOf(Service)
@@ -119,16 +103,10 @@ const readConfig = root => {
   }
 }
 
-module.exports = (root, serverConfig) => {
-  const pkg = read(root)
+module.exports = (pkg, serverConfig) => {
   const {gaia_path} = pkg
 
   serverConfig = serverConfig || readConfig(gaia_path) || {}
 
-  const config = ServerConfigShape.from(serverConfig, [gaia_path])
-
-  return {
-    pkg,
-    config
-  }
+  return ServerConfigShape.from(serverConfig, [gaia_path])
 }

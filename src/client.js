@@ -3,7 +3,7 @@ const {set} = require('object-access')
 
 const {iterateProtos} = require('./utils')
 const {unwrap} = require('./error-wrapping')
-const {read} = require('./package')
+const read = require('./package')
 const load = require('./load')
 
 const wrapClientMethods = (real_client, methods, error_props) => {

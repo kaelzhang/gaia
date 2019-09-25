@@ -2,7 +2,7 @@ const {resolve, dirname} = require('path')
 const protoLoader = require('@grpc/proto-loader')
 
 const {error} = require('./error')
-const {read} = require('./package')
+const read = require('./package')
 const {resolvePackage} = require('./utils')
 
 const DEFAULT_LOADER_OPTIONS = {

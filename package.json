@@ -42,7 +42,7 @@
   "ava": {
     "babel": false,
     "files": [
-      "test/hello.test.js"
+      "test/*.test.js"
     ]
   },
   "author": "kaelzhang",

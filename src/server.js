@@ -5,13 +5,12 @@ const serverConfig = require('./server-config')
 const {Loader} = require('./loader')
 const {Application} = require('./application')
 const {error} = require('./error')
+const read = require('./package')
 
 class Server {
-  constructor (rawRoot, rawConfig) {
-    const {
-      config,
-      pkg
-    } = serverConfig(rawRoot, rawConfig)
+  constructor (root, rawConfig) {
+    const pkg = read(root)
+    const config = serverConfig(pkg, rawConfig)
 
     this._server = new grpc.Server()
     this._app = new Application()

@@ -185,8 +185,4 @@ const PackageShape = shape({
   }
 })
 
-const read = root => PackageShape.from({root})
-
-module.exports = {
-  read
-}
+module.exports = root => PackageShape.from({root})
