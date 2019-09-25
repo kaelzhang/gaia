@@ -92,15 +92,15 @@ const getDependencyIncludeDirs = (
 }
 
 module.exports = pkg => {
-  const {gaia_path, protos} = pkg
+  const {proto_path, protos} = pkg
 
   return protos.map(proto => {
-    const resolved = resolve(gaia_path, proto)
+    const resolved = resolve(proto_path, proto)
     const includeDirs = getDependencyIncludeDirs(pkg)
 
     return {
       path: resolved,
-      def: load(proto, [gaia_path, ...includeDirs])
+      def: load(proto, [proto_path, ...includeDirs])
     }
   })
 }

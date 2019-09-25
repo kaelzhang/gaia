@@ -4,13 +4,13 @@ const fs = require('fs-extra')
 const {sync} = require('globby')
 
 const {shape} = require('./skema')
+const {RETURN} = require('./constants')
 const {
-  RETURN
-} = require('./constants')
-const {
-  isArrayString, isDirectory
+  isArrayString, isDirectory, define
 } = require('./utils')
 const {error} = require('./error')
+
+const IS_DEFAULT_PROTO_PATH = Symbol('default-proto-path')
 
 const packagePath = root => join(root, 'package.json')
 
@@ -33,7 +33,8 @@ const readPkg = root => {
   return pkg
 }
 
-const PACKAGE = {
+const PackageShape = shape({
+  // The root of the package
   root: {
     validate (root) {
       if (!isString(root)) {
@@ -56,6 +57,7 @@ const PACKAGE = {
     }
   },
 
+  // field gaia in package.json
   gaia: {
     default () {
       return {}
@@ -70,6 +72,7 @@ const PACKAGE = {
       Object.assign(this.rawParent, {
         gaia_path: gaia.path,
         proto_dependencies: gaia.protoDependencies,
+        proto_path: gaia.protoPath,
         protos: gaia.protos,
         error_props: gaia.errorProps
       })
@@ -80,9 +83,6 @@ const PACKAGE = {
 
   // The gaia path could be other than the root path of a npm package
   // by specifying `package.gaia.path`
-
-  // `gaia_path` will be the default --proto-path param to load
-  // .proto files
   gaia_path: {
     default: RETURN,
     set (path) {
@@ -129,45 +129,61 @@ const PACKAGE = {
       }
 
       return true
+    }
+  },
+
+  // `protoPath` will be the default --proto-path param to load
+  // .proto files
+  proto_path: {
+    default () {
+      define(this.parent, IS_DEFAULT_PROTO_PATH, true)
+      return 'proto'
     },
+    set (path) {
+      const {root} = this.parent
 
-    // Globbed paths of proto files
-    protos: {
-      default: ['*.proto'],
-      set (protos) {
-        const {root} = this.parent
-        const patterns = isArray(protos)
-          ? protos
-          : [protos]
-
-        if (!patterns.every(isString)) {
-          throw error('INVALID_PROTOS', packagePath(root), protos)
-        }
-
-        return sync(patterns, {
-          cwd: root
-        })
+      if (!isString(path)) {
+        throw error('INVALID_PROTO_PATH', packagePath(root), path)
       }
-    },
 
-    error_props: {
-      default: ['code', 'message'],
-      validate (props) {
-        if (!isArrayString(props)) {
-          throw error('INVALID_ERROR_PROPS', props)
-        }
+      return join(root, path)
+    }
+  },
 
-        if (props.length === 0) {
-          throw error('EMPTY_ERROR_PROPS')
-        }
+  // Globbed paths of proto files
+  protos: {
+    default: ['*.proto'],
+    set (protos) {
+      const {proto_path, root} = this.parent
+      const patterns = isArray(protos)
+        ? protos
+        : [protos]
 
-        return true
+      if (!patterns.every(isString)) {
+        throw error('INVALID_PROTOS', packagePath(root), protos)
       }
+
+      return sync(patterns, {
+        cwd: proto_path
+      })
+    }
+  },
+
+  error_props: {
+    default: ['code', 'message'],
+    validate (props) {
+      if (!isArrayString(props)) {
+        throw error('INVALID_ERROR_PROPS', props)
+      }
+
+      if (props.length === 0) {
+        throw error('EMPTY_ERROR_PROPS')
+      }
+
+      return true
     }
   }
-}
-
-const PackageShape = shape(PACKAGE)
+})
 
 const read = root => PackageShape.from({root})
 

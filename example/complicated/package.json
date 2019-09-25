@@ -1,9 +1,7 @@
 {
   "name": "complicated",
   "gaia": {
-    "protos": [
-      "src/proto/*.proto"
-    ],
+    "protoPath": "src/proto",
     "errorProps": [
       "code",
       "message",

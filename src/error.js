@@ -16,6 +16,8 @@ E('ERR_READ_PKG', 'fails to read package.json in "%s", reason: %s')
 
 TE('INVALID_GAIA', 'field "gaia" of "%s" should be either undefined or an object')
 
+TE('INVALID_PROTO_PATH', 'field "gaia.protoPath" of "%s" should be a string')
+
 TE('INVALID_PROTOS',
   'field "gaia.protos" of "%s" should be a string or an array of strings')
 

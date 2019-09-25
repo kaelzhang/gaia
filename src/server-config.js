@@ -1,11 +1,7 @@
 const {resolve, join} = require('path')
 const {isString} = require('core-util-is')
 
-const {
-  shape,
-  arrayOf,
-  objectOf
-} = require('./skema')
+const {shape, arrayOf, objectOf} = require('./skema')
 const {error} = require('./error')
 const {
   requireModule, resolvePackage, isDirectory
@@ -83,16 +79,18 @@ const Service = shape({
 
 const Services = objectOf(Service)
 
-const SERVER_SHAPE = {
+const ServerConfigShape = shape({
   controller_root: {
     default (gaia_path) {
       return resolve(gaia_path, 'controller')
     },
+
     validate (value) {
       if (!isString(value)) {
         throw error('INVALID_CONTROLLER_ROOT', value)
       }
     },
+
     set (value) {
       return resolve(this.parent.root, value)
     }
@@ -107,7 +105,7 @@ const SERVER_SHAPE = {
     type: Services,
     default: () => ({})
   }
-}
+})
 
 const readConfig = root => {
   const path = join(root, 'config.js')
@@ -121,16 +119,13 @@ const readConfig = root => {
   }
 }
 
-const ServerConfigShape = shape(SERVER_SHAPE)
-
 module.exports = (root, serverConfig) => {
   const pkg = read(root)
   const {gaia_path} = pkg
 
-  const config = ServerConfigShape.from(
-    serverConfig || readConfig(gaia_path) || {},
-    gaia_path
-  )
+  serverConfig = serverConfig || readConfig(gaia_path) || {}
+
+  const config = ServerConfigShape.from(serverConfig, [gaia_path])
 
   return {
     pkg,
