@@ -1,6 +1,7 @@
 const {join} = require('path')
 
 module.exports = {
+  controller_root: join(__dirname, 'src', 'controller'),
   plugins: [
     {
       // Eggjs compatible plugin, installed in package.json
