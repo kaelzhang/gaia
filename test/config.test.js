@@ -3,7 +3,7 @@ const {
   test, check, fixture
 } = require('./check')
 
-const read = require('../src/package')
+const read = require('../package')
 const getServerConfig = require('../src/server-config')
 const load = require('../src/load')
 
