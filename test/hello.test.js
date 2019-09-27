@@ -1,5 +1,6 @@
 const test = require('ava')
 const delay = require('delay')
+const {join} = require('path')
 
 const {
   example: fixture
@@ -26,7 +27,10 @@ test.before(async () => {
   await delay(100)
 
   const reject_root = fixture('complicated')
-  new Server(reject_root).listen(50052)
+  new Server(
+    reject_root,
+    require(join(reject_root, 'config.js'))
+  ).listen(50052)
 
   const client = new Client(reject_root)
   .connect('localhost:50052')

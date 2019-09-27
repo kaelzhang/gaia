@@ -17,7 +17,8 @@
   },
   "files": [
     "src/",
-    "package.js"
+    "package.js",
+    "config.js"
   ],
   "repository": {
     "type": "git",
@@ -69,6 +70,7 @@
     "grpc": "^1.23.3",
     "make-array": "^1.0.5",
     "object-access": "^2.0.4",
+    "require-esmodule": "^1.0.1",
     "resolve-from": "^5.0.0",
     "skema": "^9.5.1"
   }

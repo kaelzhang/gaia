@@ -1,10 +1,10 @@
-const {resolve, join} = require('path')
+const {resolve} = require('path')
 const {isString} = require('core-util-is')
 
 const {shape, arrayOf, objectOf} = require('./skema')
 const {error} = require('./error')
 const {
-  requireModule, resolvePackage, isDirectory
+  resolvePackage, isDirectory
 } = require('./utils')
 
 const ensurePath = errorCode => path => {
@@ -87,30 +87,4 @@ const ServerConfigShape = shape({
   }
 })
 
-const readConfig = root => {
-  const path = join(root, 'config.js')
-
-  try {
-    return requireModule(path)
-  } catch (err) {
-    if (err.code !== 'MODULE_NOT_FOUND') {
-      throw error('ERR_LOAD_CONFIG', path, err.stack)
-    }
-  }
-}
-
-const clean = (config, cwd) =>
-  ServerConfigShape.from(config, [cwd])
-
-const ensure = (pkg, serverConfig) => {
-  const {root} = pkg
-
-  serverConfig = serverConfig || readConfig(root) || {}
-
-  return clean(serverConfig, root)
-}
-
-module.exports = {
-  clean,
-  ensure
-}
+module.exports = (config, cwd) => ServerConfigShape.from(config, [cwd])

@@ -44,8 +44,6 @@ E('PACKAGE_OR_PATH_REQUIRED',
 
 E('ERR_LOAD_PROTO', 'fails to load proto file "%s", reason: %s')
 
-E('ERR_LOAD_CONFIG', 'fails to load config file "%s", reason: %s')
-
 E('ERR_LOAD_PLUGIN', 'fails to load plugin, reason: %s')
 
 E('ERR_LOAD_CONTROLLER',

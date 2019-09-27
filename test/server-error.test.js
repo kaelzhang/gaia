@@ -29,8 +29,13 @@ const CHECK_ROOT_CASES = [
 ]
 
 CHECK_ROOT_CASES.forEach(([code, dir, config], i) => {
-  check([code, () => new Server(fixture(dir), config)],
-    `new Server() error: ${i}: ${code}`)
+  check([
+    code,
+    () => new Server(
+      fixture(dir),
+      config
+    )
+  ], `new Server() error: ${i}: ${code}`)
 })
 
 check([

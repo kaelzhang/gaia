@@ -4,13 +4,11 @@ const {
 } = require('./check')
 
 const read = require('../package')
-const {ensure} = require('../src/server-config')
+const clean = require('../config')
 const load = require('../src/load')
 
-const serverConfig = (root, config) => {
-  const pkg = read(root)
-  return ensure(pkg, config)
-}
+const serverConfig = (root, config) =>
+  clean(config || require(join(root, 'config.js')), root)
 
 const loadProto = root => load(read(root))
 
@@ -19,9 +17,9 @@ check(['INVALID_ROOT', () => read(1)], 'invalid root')
 const host = 'localhost:8888'
 
 const SERVER_CONFIG_CASES = [
-  ['PATH_NOT_DIR', 'err-not-dir'],
-  ['ERR_READ_PKG', 'err-read-pkg'],
-  ['INVALID_GAIA', 'err-invalid-pkg-gaia'],
+  ['PATH_NOT_DIR', 'err-not-dir', read],
+  ['ERR_READ_PKG', 'err-read-pkg', read],
+  ['INVALID_GAIA', 'err-invalid-pkg-gaia', read],
   ['ERR_LOAD_PROTO', 'err-load-proto', loadProto],
   ['INVALID_PROTOS', 'err-invalid-protos', read],
   ['INVALID_ERROR_PROPS', 'err-invalid-error-props', read],
@@ -55,7 +53,6 @@ const SERVER_CONFIG_CASES = [
       }
     }
   }],
-  ['ERR_LOAD_CONFIG', 'err-load-config'],
   ['MODULE_NOT_FOUND', 'empty', serverConfig, {
     services: {
       foo: {
@@ -64,8 +61,8 @@ const SERVER_CONFIG_CASES = [
       }
     }
   }],
-  ['INVALID_PROTO_DEPS', 'err-invalid-proto-deps'],
-  ['DEP_OUT_RANGE', 'err-dep-out-range']
+  ['INVALID_PROTO_DEPS', 'err-invalid-proto-deps', read],
+  ['DEP_OUT_RANGE', 'err-dep-out-range', read]
 ]
 
 SERVER_CONFIG_CASES.forEach(([code, dir, runner = serverConfig, config], i) => {

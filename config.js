@@ -1,1 +1,1 @@
-module.exports = require('./src/server-config').clean
+module.exports = require('./src/server-config')

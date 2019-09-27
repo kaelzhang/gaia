@@ -87,7 +87,7 @@ Connects to the gRPC server and returns the service methods
 ## new Server(root, serverConfig?)
 
 - **root** `path` the root path to load the server from
-- **serverConfig?** `ServerConfig` server configurations. If not specified, `gaia` will load configuration from `${root}/config.js`
+- **serverConfig?** `ServerConfig={}` server configurations
 
 ```ts
 interface ServerConfig {

@@ -1,16 +1,16 @@
 const grpc = require('grpc')
 const {isNumber} = require('core-util-is')
 
-const {ensure} = require('./server-config')
+const clean = require('./server-config')
 const {Loader} = require('./loader')
 const {Application} = require('./application')
 const {error} = require('./error')
 const read = require('./package')
 
 class Server {
-  constructor (root, rawConfig) {
+  constructor (root, rawConfig = {}) {
     const pkg = read(root)
-    const config = ensure(pkg, rawConfig)
+    const config = clean(rawConfig, root)
 
     this._server = new grpc.Server()
     this._app = new Application()

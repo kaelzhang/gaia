@@ -1,13 +1,10 @@
 const {join} = require('path')
 const {set} = require('object-access')
+const {requireModule} = require('require-esmodule')
 
 const {Client} = require('./client')
 const {wrap} = require('./error-wrapping')
-const {
-  iterateProtos,
-  requireModule,
-  define
-} = require('./utils')
+const {iterateProtos, define} = require('./utils')
 const {CONFIG, CONTEXT} = require('./constants')
 const {error} = require('./error')
 const load = require('./load')
@@ -79,7 +76,7 @@ class Loader {
     try {
       return {
         service_path: p,
-        methods: requireModule(p)
+        methods: requireModule(p, false)
       }
     } catch (err) {
       throw error('ERR_LOAD_CONTROLLER', p, package_name, err.stack)

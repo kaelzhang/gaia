@@ -20,15 +20,6 @@ const define = (host, key, value, enumerable = false) =>
 const defineGetter = (host, key, get) =>
   Object.defineProperty(host, key, {get})
 
-const requireModule = path => {
-  // TODO
-  // support typescript
-  // support esmodule
-
-  const exports = require(path)
-  return exports
-}
-
 const serviceMethodNames = service_def =>
   Object.keys(service_def)
   .map(name => {
@@ -96,7 +87,6 @@ module.exports = {
   symbol,
   define,
   defineGetter,
-  requireModule,
   iterateProtos,
   resolvePackage,
   isArrayString,
