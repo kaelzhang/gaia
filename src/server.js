@@ -34,6 +34,17 @@ class Server {
 
     server.bind(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure())
     server.start()
+    return this
+  }
+
+  kill () {
+    this._server.forceShutdown()
+  }
+
+  async close () {
+    return new Promise(resolve => {
+      this._server.tryShutdown(resolve)
+    })
   }
 }
 

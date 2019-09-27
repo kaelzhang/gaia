@@ -127,6 +127,14 @@ interface Services {
 
 Start the gaia server.
 
+### server.kill()
+
+Forcibly shut down the gRPC server
+
+### await server.close()
+
+Gracefully shut down the server
+
 ## How `gaia` makes `.proto` files sharable and portable?
 
 `gaia` takes full advantage of npm packages to share proto files.
