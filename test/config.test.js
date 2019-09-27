@@ -4,12 +4,12 @@ const {
 } = require('./check')
 
 const read = require('../package')
-const getServerConfig = require('../src/server-config')
+const {ensure} = require('../src/server-config')
 const load = require('../src/load')
 
 const serverConfig = (root, config) => {
   const pkg = read(root)
-  return getServerConfig(pkg, config)
+  return ensure(pkg, config)
 }
 
 const loadProto = root => load(read(root))

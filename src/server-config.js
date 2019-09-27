@@ -99,10 +99,18 @@ const readConfig = root => {
   }
 }
 
-module.exports = (pkg, serverConfig) => {
+const clean = (config, cwd) =>
+  ServerConfigShape.from(config, [cwd])
+
+const ensure = (pkg, serverConfig) => {
   const {root} = pkg
 
   serverConfig = serverConfig || readConfig(root) || {}
 
-  return ServerConfigShape.from(serverConfig, [root])
+  return clean(serverConfig, root)
+}
+
+module.exports = {
+  clean,
+  ensure
 }
