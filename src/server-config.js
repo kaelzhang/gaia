@@ -65,18 +65,14 @@ const Services = objectOf(Service)
 
 const ServerConfigShape = shape({
   controller_root: {
-    default (root) {
-      return resolve(root, 'controller')
-    },
+    default: 'controller',
 
-    validate (value) {
+    set (value, root) {
       if (!isString(value)) {
         throw error('INVALID_CONTROLLER_ROOT', value)
       }
-    },
 
-    set (value) {
-      return resolve(this.parent.root, value)
+      return resolve(root, value)
     }
   },
 
