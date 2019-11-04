@@ -177,7 +177,7 @@ package.json
 }
 ```
 
-The the **optional** field `gaia` follows the schema:
+The the **optional** field `gaia` of package.json follows the schema:
 
 ```ts
 interface FieldGaia {
