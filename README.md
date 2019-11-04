@@ -38,7 +38,9 @@ $ npm i gaia
 
 ```js
 const {
-  Server, Client
+  Server,
+  Client,
+  resolvePackage
 } = require('gaia')
 
 const root = path.join(__dirname, 'example', 'hello')
@@ -134,6 +136,16 @@ Forcibly shut down the gRPC server
 ### await server.close()
 
 Gracefully shut down the server
+
+## resolvePackage(id: string): string
+
+- **id** `string` package id
+
+Returns the root path of the package
+
+```js
+new Client(resolvePackage('foo')).connect(host)
+```
 
 ## How `gaia` makes `.proto` files sharable and portable?
 

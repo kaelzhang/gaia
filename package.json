@@ -1,6 +1,6 @@
 {
   "name": "gaia",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "Gaia, the very framework to make gRPC services",
   "main": "src/index.js",
   "scripts": {
@@ -57,7 +57,7 @@
     "codecov": "^3.6.1",
     "delay": "^4.3.0",
     "egg-bog": "^1.0.2",
-    "eslint": "^6.4.0",
+    "eslint": "^6.6.0",
     "eslint-plugin-import": "^2.18.2",
     "nyc": "^14.1.1"
   },
@@ -67,7 +67,7 @@
     "err-object": "^5.1.4",
     "fs-extra": "^8.1.0",
     "globby": "^10.0.1",
-    "grpc": "^1.23.3",
+    "grpc": "^1.24.2",
     "make-array": "^1.0.5",
     "object-access": "^2.0.4",
     "require-esmodule": "^1.0.1",
