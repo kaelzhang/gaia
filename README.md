@@ -124,7 +124,7 @@ interface Services {
 }
 ```
 
-### server.listen(port): void
+### server.listen(port): this
 
 - **port** `number` the port which gRPC server will listen to.
 

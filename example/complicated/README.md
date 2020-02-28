@@ -22,6 +22,6 @@ new Server(__dirname, config).listen(50051)
 
 ### Why `controller_root` in `config.js` and "gaia.protoPath" in `package.json`
 
-`.proto` files and `package.json` are portable which indicates that they could be used by other languages.
+`.proto` files and `package.json` are [portable](https://github.com/kaelzhang/gaia#how-gaia-makes-proto-files-sharable-and-portable) which indicates that they could be used by other languages.
 
 And `controller_root` is only used by the server which must be implemented in a specific language.
