@@ -46,7 +46,8 @@ const {
 const root = path.join(__dirname, 'example', 'hello')
 ```
 
-To make better understanding the usage of `gaia`, the example below is based on the demo in the [`example/hello`](https://github.com/kaelzhang/gaia/tree/master/example/hello) directory.
+To make better understanding the usage of `gaia`, **the example below is based on the demo in the
+[`example/hello`](https://github.com/kaelzhang/gaia/tree/master/example/hello) directory**.
 
 Start server:
 
