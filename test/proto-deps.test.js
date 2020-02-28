@@ -13,11 +13,11 @@ const {
 // Gaia should make it right
 test('proto dependencies', async t => {
   const hello_root = fixture('proto-deps')
-  new Server(hello_root).listen(50053)
+  new Server(hello_root).listen(50055)
 
   // eslint-disable-next-line prefer-destructuring
   const {Greeter} = new Client(hello_root)
-  .connect('localhost:50053')
+  .connect('localhost:50055')
 
   const obj = Object.create(null)
 

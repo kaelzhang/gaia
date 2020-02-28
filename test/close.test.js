@@ -10,8 +10,8 @@ const {
 } = require('../src')
 
 test('kill', async t => {
-  const server = new Server(example('hello')).listen(50053)
-  const {Greeter} = new Client(example('hello')).connect('localhost:50053')
+  const server = new Server(example('hello')).listen(50056)
+  const {Greeter} = new Client(example('hello')).connect('localhost:50056')
 
   const res = Greeter.delayedSayHello({
     name: 'world'
@@ -23,8 +23,8 @@ test('kill', async t => {
 })
 
 test('close', async t => {
-  const server = new Server(example('hello')).listen(50054)
-  const {Greeter} = new Client(example('hello')).connect('localhost:50054')
+  const server = new Server(example('hello')).listen(50057)
+  const {Greeter} = new Client(example('hello')).connect('localhost:50057')
 
   const req = Greeter.delayedSayHello({
     name: 'world'

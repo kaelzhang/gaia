@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+import "message.proto";
+
+package ErrorControl;
+
+service Throw {
+  rpc Throws (EmptyMessage) returns (EmptyMessage) {}
+  rpc ThrowsNoCode (EmptyMessage) returns (EmptyMessage) {}
+  rpc Rejects (EmptyMessage) returns (EmptyMessage) {}
+}

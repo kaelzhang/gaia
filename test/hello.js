@@ -3,10 +3,6 @@ const delay = require('delay')
 const {join} = require('path')
 
 const {
-  example: fixture
-} = require('./check')
-
-const {
   Server, Client
 } = require('../src')
 
@@ -18,11 +14,11 @@ module.exports = (fixture, port) => {
 
   test.before(async () => {
     const hello_root = fixture('hello')
-    new Server(hello_root).listen(50051)
+    new Server(hello_root).listen(port)
 
     // eslint-disable-next-line prefer-destructuring
     Greeter = new Client(hello_root)
-    .connect('localhost:50051')
+    .connect(`localhost:${port}`)
     .Greeter
 
     await delay(100)
@@ -31,10 +27,10 @@ module.exports = (fixture, port) => {
     new Server(
       reject_root,
       require(join(reject_root, 'config.js'))
-    ).listen(50052)
+    ).listen(port + 1)
 
     const client = new Client(reject_root)
-    .connect('localhost:50052')
+    .connect(`localhost:${port + 1}`)
 
     // eslint-disable-next-line prefer-destructuring
     Throw = client.ErrorControl.Throw

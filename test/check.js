@@ -16,12 +16,15 @@ const check = ([code, run], i) => {
   })
 }
 
-const fixture = (...sub) => join(__dirname, 'fixtures', ...sub)
-const example = (...sub) => join(__dirname, '..', 'example', ...sub)
+const createFixture = base => (...sub) => join(base, ...sub)
+
+const fixture = createFixture(join(__dirname, 'fixtures'))
+const example = createFixture(join(__dirname, '..', 'example'))
 
 module.exports = {
   test,
   check,
   fixture,
-  example
+  example,
+  createFixture
 }
