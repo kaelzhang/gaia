@@ -5,6 +5,7 @@ __pycache__
 /dist
 /.tox
 /.pytest_cache
+python_out
 
 # node
 package-lock.json
@@ -66,6 +67,8 @@ old/
 *-old/
 *-notrack/
 no-track/
+no_track
+*.no_track.*
 build/
 combo/
 reference/

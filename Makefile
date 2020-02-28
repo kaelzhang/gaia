@@ -4,6 +4,9 @@ test:
 install:
 	pip install -r requirement.txt -r test-requirement.txt
 
+protoc:
+	python -m grpc_tools.protoc -Iexample/hello/proto --python_out=example/hello/protoc --grpc_python_out=example/hello/protoc example/hello/proto/hello.proto
+
 report:
 	codecov
 
@@ -15,4 +18,4 @@ publish:
 	make build
 	twine upload --config-file ~/.pypirc -r pypi dist/*
 
-.PHONY: test
+.PHONY: test build
