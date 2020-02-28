@@ -10,7 +10,7 @@ Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines 
 - **Eggjs compatible plugins** `gaia` supports to use [egg plugins](https://github.com/search?q=topic%3Aegg-plugin&type=Repositories) to extend your applications.
 - **Restful API service made easy** `gaia` provides a convenient way to define restful API routings upon the existing gRPC services.
 
-For now, `gaia` only supports [**proto3**](https://developers.google.com/protocol-buffers/docs/proto3).
+`gaia` supports both [**proto2**](https://developers.google.com/protocol-buffers/docs/proto) and [**proto3**](https://developers.google.com/protocol-buffers/docs/proto3).
 
 ## Install
 
