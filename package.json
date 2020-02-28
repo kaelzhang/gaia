@@ -2,7 +2,7 @@
   "name": "gaia",
   "version": "3.1.4",
   "description": "Gaia, the very framework to make gRPC services",
-  "main": "src/index.js",
+  "main": "node/src/index.js",
   "scripts": {
     "test:only": "nyc ava --timeout=10s --verbose",
     "test:no-cov": "ava --timeout=10s --verbose",
@@ -16,7 +16,7 @@
     "report:open": "open coverage/index.html"
   },
   "files": [
-    "src/",
+    "node/src/",
     "package.js",
     "config.js"
   ],
@@ -42,7 +42,7 @@
   },
   "ava": {
     "files": [
-      "test/*.test.js"
+      "node/test/*.test.js"
     ]
   },
   "author": "kaelzhang",

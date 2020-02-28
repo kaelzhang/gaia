@@ -1,1 +1,1 @@
-module.exports = require('./src/package')
+module.exports = require('./node/src/package')

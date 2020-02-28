@@ -1,3 +1,23 @@
+# Python
+__pycache__
+*.pyc
+*.egg-info
+/dist
+/.tox
+/.pytest_cache
+
+# node
+package-lock.json
+
+# Coverage
+/.nyc_output
+/coverage
+/.coverage
+/coverage.lcov
+
+# Tarballs
+*.tgz
+
 # babel dist
 /lib
 
@@ -22,7 +42,6 @@ nohup.out
 .nyc_output
 coverage.lcov
 package-lock.json
-*.tgz
 
 # OS or Editor folders
 .DS_Store

@@ -1,1 +1,1 @@
-module.exports = require('./src/server-config')
+module.exports = require('./node/src/server-config')
