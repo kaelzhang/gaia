@@ -4,7 +4,7 @@
   "description": "Gaia, the very framework to make gRPC services",
   "main": "node/src/index.js",
   "scripts": {
-    "test:only": "nyc ava --timeout=10s --verbose",
+    "test:only": "nyc --exclude node/test ava --timeout=10s --verbose",
     "test:no-cov": "ava --timeout=10s --verbose",
     "test": "npm run test:only",
     "test:dev": "NODE_DEBUG=gaia npm run test:only && npm run report:dev",

@@ -1,1 +1,1 @@
-module.exports = require('../../../../../example/hello/controller/Greeter')
+module.exports = require('../../../../../../example/hello/controller/Greeter')

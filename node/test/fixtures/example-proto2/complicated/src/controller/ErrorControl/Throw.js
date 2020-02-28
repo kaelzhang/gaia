@@ -1,1 +1,1 @@
-module.exports = require('../../../../../../../example/complicated/src/controller/ErrorControl/Throw')
+module.exports = require('../../../../../../../../example/complicated/src/controller/ErrorControl/Throw')

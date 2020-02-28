@@ -3,8 +3,8 @@ const {
   test, check, fixture
 } = require('./check')
 
-const read = require('../package')
-const clean = require('../config')
+const read = require('../../package')
+const clean = require('../../config')
 const load = require('../src/load')
 
 const serverConfig = (root, config) =>
@@ -80,7 +80,7 @@ test('config servie package', t => {
     }
   })
 
-  const path = join(__dirname, '..', 'node_modules', 'egg-bog')
+  const path = join(__dirname, '..', '..', 'node_modules', 'egg-bog')
 
   t.is(config.services.foo.path, path)
 })

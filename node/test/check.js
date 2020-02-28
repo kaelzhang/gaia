@@ -1,6 +1,7 @@
 const {join} = require('path')
-const log = require('util').debuglog('gaia')
 const test = require('ava')
+
+const log = require('util').debuglog('gaia')
 
 const check = ([code, run], i) => {
   test(String(i), t => {
@@ -19,7 +20,7 @@ const check = ([code, run], i) => {
 const createFixture = base => (...sub) => join(base, ...sub)
 
 const fixture = createFixture(join(__dirname, 'fixtures'))
-const example = createFixture(join(__dirname, '..', 'example'))
+const example = createFixture(join(__dirname, '..', '..', 'example'))
 
 module.exports = {
   test,
