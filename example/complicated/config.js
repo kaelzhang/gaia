@@ -13,6 +13,9 @@ module.exports = {
   ],
   // gaia services
   services: {
+    // Then we could use service hello in each controller of
+    //   example `complicated`
+    // See controller/Greeter.js
     hello: {
       path: join(__dirname, '..', 'hello'),
       host: 'localhost:50051'

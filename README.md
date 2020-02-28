@@ -3,7 +3,7 @@
 
 # gaia
 
-Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines the way we write gRPC services.
+Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines a definitely intuitive way to write gRPC services.
 
 - **Handle Custom Errors** `gRPC` does NOT provide an formal way to handle errors, even lack of documentation, while `gaia` will do it for you.
 - **Manage `.proto` files** `gaia` allows us to share proto files between server and clients. `gaia` shares `gPRC` protobuf files by wrapping them into an npm package and publishing the npm tarball to npm registry.
