@@ -1,6 +1,6 @@
 {
   "name": "gaia",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "description": "Gaia, the very framework to make gRPC services",
   "main": "node/src/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "report:open": "open coverage/index.html"
   },
   "files": [
-    "node/src/",
+    "node/src/*.js",
     "package.js",
     "config.js"
   ],
