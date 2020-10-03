@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/kaelzhang/gaia.svg?branch=master)](https://travis-ci.org/kaelzhang/gaia)
 [![Coverage](https://codecov.io/gh/kaelzhang/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/kaelzhang/gaia)
 
-# gaia
+# gaia (for node.js)
 
 Gaia, the very framework to make [gRPC](https://grpc.io) services. Gaia defines a definitely intuitive way to write gRPC services.
 
@@ -47,7 +47,7 @@ const root = path.join(__dirname, 'example', 'hello')
 ```
 
 To make better understanding the usage of `gaia`, **the example below is based on the demo in the
-[`example/hello`](https://github.com/kaelzhang/gaia/tree/master/example/hello) directory**.
+[`example/node/hello`](https://github.com/kaelzhang/gaia/tree/master/example/node/hello) directory**.
 
 Start server:
 
