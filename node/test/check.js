@@ -20,7 +20,7 @@ const check = ([code, run], i) => {
 const createFixture = base => (...sub) => join(base, ...sub)
 
 const fixture = createFixture(join(__dirname, 'fixtures'))
-const example = createFixture(join(__dirname, '..', '..', 'example'))
+const example = createFixture(join(__dirname, '..', '..', 'example', 'node'))
 
 module.exports = {
   test,

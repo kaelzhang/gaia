@@ -52,25 +52,25 @@
   },
   "devDependencies": {
     "@ostai/eslint-config": "^3.5.0",
-    "ava": "^3.4.0",
-    "codecov": "^3.6.5",
-    "delay": "^4.3.0",
+    "ava": "^3.13.0",
+    "codecov": "^3.7.2",
+    "delay": "^4.4.0",
     "egg-bog": "^1.0.2",
-    "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.20.1",
-    "nyc": "^15.0.0"
+    "eslint": "^7.10.0",
+    "eslint-plugin-import": "^2.22.1",
+    "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@grpc/proto-loader": "^0.5.3",
+    "@grpc/proto-loader": "^0.5.5",
     "core-util-is": "^1.0.2",
     "err-object": "^5.1.4",
-    "fs-extra": "^8.1.0",
-    "globby": "^11.0.0",
-    "grpc": "^1.24.2",
+    "fs-extra": "^9.0.1",
+    "globby": "^11.0.1",
+    "grpc": "^1.24.3",
     "make-array": "^1.0.5",
     "object-access": "^2.0.4",
     "require-esmodule": "^1.0.1",
     "resolve-from": "^5.0.0",
-    "skema": "^9.5.1"
+    "skema": "^9.5.5"
   }
 }
